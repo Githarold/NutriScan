@@ -1,4 +1,5 @@
-import os, openai, requests
+import os, requests
+from openai import OpenAI
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv, find_dotenv
 
@@ -8,8 +9,9 @@ class GetInfo:
         
         # API KEY 가져옴
         load_dotenv(find_dotenv())
-        openai.api_key = os.getenv('GPT_TOKEN')
         self.nut_api_key = os.getenv('NUT_TOKEN')
+        self.client = OpenAI(api_key=os.environ['GPT_TOKEN'])
+        print(self.client)
         
         self.model = "gpt-3.5-turbo"
         self.max_tokens = 30
@@ -19,16 +21,17 @@ class GetInfo:
         
         # 부족한 영양소와 양을 문장으로 변환
         nutrient_info = ", ".join([f"{nutrient}: {amount}" for nutrient, amount in nutrient_deficiencies.items()])
-        prompt = f"다음과 같은 영양소가 부족합니다: {nutrient_info}. 이러한 영양소를 보충할 수 있는 음식은 무엇일까요?"
+        prompt = f"다음 영양소가 부족합니다: {nutrient_info}. 이 영양소를 보충할 수 있는 요리 메뉴 이름만 알려주세요."
 
         # 메시지 형식으로 요청 생성
-        response = openai.ChatCompletion.create(
+        response = self.client.chat.completions.create(
             model=self.model,
             messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "system", "name":"example_user", "content": "다음 영양소가 부족합니다: calories: 100g, protein: 25g. 이 영양소를 보충할 수 있는 요리 메뉴 이름만 알려주세요."},
+                {"role": "system", "name": "example_assistant", "content": "닭 가슴살 샐러드"},
                 {"role": "user", "content": prompt}
             ],
-            # max_tokens=self.max_tokens
+            max_tokens=self.max_tokens
         )
 
         # 응답 반환
@@ -89,7 +92,7 @@ if __name__ == "__main__":
     info_getter = GetInfo()
 
     # # 테스트하고 싶은 음식 이름
-    # food_name = "난자완스"
+    # food_name = "탕수육"
 
     # # 영양소 정보 조회
     # nutritional_info = info_getter.get_info_openapi(food_name)
@@ -102,10 +105,10 @@ if __name__ == "__main__":
     #     for nutrient, value in nutritional_info.get('nutritional_info').items():
     #         print(f"{nutrient}: {value}")
     
-    nutrient_deficiencies = {
-        "calories": "100g",
-        "protein": "25g"
-    }  # 부족한 영양소와 양
+    # nutrient_deficiencies = {
+    #     "calories": "100g",
+    #     "protein": "25g"
+    # }  # 부족한 영양소와 양
     
-    recommendation = info_getter.get_info_gpt(nutrient_deficiencies)
-    print(recommendation)
+    # recommendation = info_getter.get_info_gpt(nutrient_deficiencies)
+    # print(recommendation)
