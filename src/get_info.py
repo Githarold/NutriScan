@@ -20,7 +20,7 @@ class GetInfo:
     def get_info_gpt(self, deficient_nutrients):
         
         # 부족한 영양소와 양을 문장으로 변환
-        nutrient_info = ", ".join([f"{nutrient}: {amount}" for nutrient, amount in nutrient_deficiencies.items()])
+        nutrient_info = ", ".join([f"{nutrient}: {amount}" for nutrient, amount in deficient_nutrients.items()])
         prompt = f"다음 영양소가 부족합니다: {nutrient_info}. 이 영양소를 보충할 수 있는 요리 메뉴 이름만 알려주세요."
 
         # 메시지 형식으로 요청 생성
@@ -91,19 +91,19 @@ if __name__ == "__main__":
     # GetInfo 클래스 인스턴스 생성
     info_getter = GetInfo()
 
-    # # 테스트하고 싶은 음식 이름
-    # food_name = "탕수육"
+    # 테스트하고 싶은 음식 이름
+    food_name = "김치볶음밥"
 
-    # # 영양소 정보 조회
-    # nutritional_info = info_getter.get_info_openapi(food_name)
+    # 영양소 정보 조회
+    nutritional_info = info_getter.get_info_openapi(food_name)
 
-    # # 결과 출력
-    # if nutritional_info.get('error'):
-    #     print("Error:", nutritional_info.get('message'))
-    # else:
-    #     print("Nutritional Information for", food_name, ":")
-    #     for nutrient, value in nutritional_info.get('nutritional_info').items():
-    #         print(f"{nutrient}: {value}")
+    # 결과 출력
+    if nutritional_info.get('error'):
+        print("Error:", nutritional_info.get('message'))
+    else:
+        print("Nutritional Information for", food_name, ":")
+        for nutrient, value in nutritional_info.get('nutritional_info').items():
+            print(f"{nutrient}: {value}")
     
     # nutrient_deficiencies = {
     #     "calories": "100g",
