@@ -1,3 +1,5 @@
 python-dotenv
 openai
 pymysql
+openpyx1
+PyQt5
