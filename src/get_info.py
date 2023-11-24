@@ -35,7 +35,7 @@ class GetInfo:
         )
 
         # 응답 반환
-        return response.choices[0].message['content']
+        return response.choices[0].message.content
     
     # input : 음식 이름 | output : 영양소 정보 딕셔너리
     def get_info_openapi(self, food_name):
