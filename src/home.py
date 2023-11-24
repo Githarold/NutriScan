@@ -9,6 +9,7 @@ from DietInfoDialog import DietInfoDialog
 from BMRinfoDialog import BMRInfoDialog
 from ExcelExporter import ExcelExporter
 from FoodRecommendationDialog import FoodRecommendationDialog
+from Database import Database
 import json
 
 
@@ -21,6 +22,7 @@ class Home(QDialog):
         self.user_id = user_id
         self.user_credentials = user_credentials
         self.initUI()
+        self.db = Database()
 
     def initUI(self):
         user_name = self.user_credentials.get(self.user_id, {}).get('details', {}).get('name', 'Unknown User')
@@ -107,15 +109,10 @@ class Home(QDialog):
         self.close()  # 다이얼로그 닫기
 
     def export_user_credentials(self):
-        # 사용자 자격 증명 데이터를 JSON 파일로 저장
-        file_path = os.path.join(os.getcwd(), 'user_credentials.json')
-        with open(file_path, 'w') as file:
-            json.dumps(self.user_credentials, ensure_ascii=False, indent=4)
-        
-        # 콘솔에 사용자 자격 증명 데이터 출력
-        print("사용자 자격 증명 데이터:")
-        print(json.dumps(self.user_credentials, ensure_ascii=False, indent=4))
-
-
-        QMessageBox.information(self, '정보 내보내기', f'사용자 정보가 {file_path}에 저장되었습니다.')
-        
+        # 데이터베이스 객체 생성
+        db = Database()
+        # user_credentials 데이터베이스에 저장
+        db.save_user_credentials(self.user_credentials)
+        # 데이터베이스 연결 종료
+        db.close()
+        QMessageBox.information(self, '정보 내보내기', '사용자 정보가 데이터베이스에 저장되었습니다.')

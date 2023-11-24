@@ -1,4 +1,5 @@
 import pymysql
+import json
 
 class Database:
 
@@ -175,6 +176,43 @@ class Database:
             print(f"An error occurred: {e}")
             self.connection.rollback()
             return False  # 정보 업데이트 실패
+
+    def save_user_credentials(self, user_credentials):
+        for user_id, credentials in user_credentials.items():
+            # details 키가 있는지 확인하고, 없으면 빈 딕셔너리를 할당
+            user_details = credentials.get('details', {})
+            # 필수 키들에 대해 기본값을 확인하거나 할당
+            name = user_details.get('name', '')
+            gender = user_details.get('gender', '')
+            age = user_details.get('age', 0)
+            weight = user_details.get('weight', 0)
+            height = user_details.get('height', 0)
+            allergies = user_details.get('allergies', '')
+            # 식단 정보를 JSON 문자열로 변환
+            diet_json = json.dumps(credentials.get('diet', {}), ensure_ascii=False)
+            
+            # 데이터베이스에 사용자 정보가 이미 존재하는지 확인
+            if self.check_user_exists(user_id):
+                # 기존 사용자 정보를 업데이트
+                self.update_user_details(user_id, {
+                    'name': name,
+                    'gender': gender,
+                    'age': age,
+                    'weight': weight,
+                    'height': height,
+                    'allergies': allergies
+                })
+            else:
+                # 새로운 사용자 정보를 삽입
+                insert_query = """
+                INSERT INTO users (user_id, password, details, diet) 
+                VALUES (%s, %s, %s, %s)
+                ON DUPLICATE KEY UPDATE
+                password=VALUES(password),
+                details=VALUES(details),
+                diet=VALUES(diet)
+                """
+                self.insert_data(insert_query, (user_id, credentials['password'], json.dumps(user_details), diet_json))
 
     def delete_user_data(self, user_id):
         # 사용자의 식단 정보를 삭제하는 쿼리

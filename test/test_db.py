@@ -107,7 +107,7 @@ users_query = "SELECT * FROM users"
 users_data = DB.fetch_data(users_query)
 print(users_data)
 
-user_id_to_check = 'happydog'  # 예시로 사용할 사용자 ID
+user_id_to_check = 'grwise'  # 예시로 사용할 사용자 ID
 diet_query = "SELECT * FROM diet WHERE user_id = %s"
 diet_data = DB.fetch_data(diet_query, (user_id_to_check,))
 
