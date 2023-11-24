@@ -34,11 +34,7 @@ class GetInfo:
 
         # 응답에서 텍스트 추출
         # 'message' 객체가 아닌 'text' 속성을 사용하여 텍스트 내용을 추출
-        try:
-            recommended_food = response.choices[0].message['content'].strip()
-        except AttributeError:
-            # 다른 속성을 사용하여 텍스트를 추출하는 대체 코드
-            recommended_food = response.choices[0].message.content.strip()
+        recommended_food = response.choices[0].message.content.strip()  # 'message.content' 속성 사용
 
         return recommended_food
 
