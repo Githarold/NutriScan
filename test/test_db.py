@@ -86,7 +86,7 @@ DB = Database()
 # """
 # DB.execute_query(create_diet_table_query)
 
-# # 사용자 정보를 users 테이블에 삽입합니다.
+# # # 사용자 정보를 users 테이블에 삽입합니다.
 # for user_id, user_data in json_data.items():
 #     details = user_data['details']
 #     insert_user_query = "INSERT INTO users (user_id, password, name, gender, age, weight, height, allergies) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"

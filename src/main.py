@@ -8,10 +8,8 @@ class MyApp(QWidget):
     def __init__(self):
         super().__init__()
         self.db = Database()
-        self.user_credentials = self.db.fetch_all_users()
         self.ui_manager = UIManager(self)
         self.event_handler = EventHandler(self)
-
         self.initUI()
 
 
