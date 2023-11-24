@@ -4,3 +4,4 @@ pymysql
 pandas 
 openpyxl
 PyQt5
+requests
