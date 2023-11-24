@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import *
-import json
+
 from datetime import datetime
+from get_info import GetInfo
 
 class FoodRecommendationDialog(QDialog):
     def __init__(self, user_credentials, user_id):
@@ -88,26 +89,17 @@ class FoodRecommendationDialog(QDialog):
         return self.user_credentials.get(self.user_id, {}).get('details', {}).get('name', 'Unknown User')
 
     def on_recommendation_button_clicked(self):
-        remaining_intake = self.calculate_remaining_intake()
+        # 사용자의 남은 영양소 계산
         remaining_nutrients = self.calculate_remaining_nutrient_intake()
         user_name = self.get_user_name()
 
-        # 남은 섭취량 및 영양소 데이터를 JSON 파일로 저장
-        remaining_intake_data = {
-            'user_name': user_name,
-            'remaining_intake': remaining_intake,
-            'remaining_nutrients': remaining_nutrients
-        }
-        file_name = f"{user_name}_remaining_intake.json"
-        with open(file_name, 'w') as file:
-            json.dump(remaining_intake_data, file, indent=4)
+        # GetInfo 클래스 인스턴스 생성 및 추천 받기
+        info_getter = GetInfo()
+        recommended_food = info_getter.get_info_gpt(remaining_nutrients)
 
-        # 콘솔에 남은 섭취량 및 영양소 정보 출력
-        print(f"{user_name}님의 현재 남은 섭취량: {remaining_intake}칼로리, 남은 영양소: {remaining_nutrients}")
-
-        # 사용자에게 파일 저장 알림
-        QMessageBox.information(self, '음식 추천', f'{user_name}님의 남은 섭취량 및 영양소 정보가 {file_name}에 저장되었습니다.')
-    
+        # 추천 음식 다이얼로그에 표시
+        QMessageBox.information(self, '음식 추천', f'{user_name}님을 위한 추천 음식: {recommended_food}')
+        
     def calculate_recommended_intake(self):
         bmr = self.calculate_bmr()
         # 탄수화물 50%, 단백질 30%, 지방 20%로 분배
