@@ -1,5 +1,5 @@
 python-dotenv
 openai
 pymysql
-openpyxl
+pandas openpyxl
 PyQt5
