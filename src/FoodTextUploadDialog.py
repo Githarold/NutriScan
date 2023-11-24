@@ -53,7 +53,7 @@ class FoodTextUploadDialog(QDialog):
             return
 
         # 음식 정보 검색
-        food_info = search_food_nutrition('/Users/you-seungwon/Desktop/sbjb/nutritioninfo.xlsx', food_name)
+        food_info = search_food_nutrition('./nutritioninfo.xlsx', food_name)
         if not food_info:
             # 영양 정보 수동 입력 대화상자 열기
             manual_input_dialog = ManualNutritionInputDialog(food_name)
