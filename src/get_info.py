@@ -18,7 +18,6 @@ class GetInfo:
     
     # input : 부족 영양소 정보 딕셔너리 | output : 추천 음식 문자열
     def get_info_gpt(self, deficient_nutrients):
-        
         # 부족한 영양소와 양을 문장으로 변환
         nutrient_info = ", ".join([f"{nutrient}: {amount}" for nutrient, amount in deficient_nutrients.items()])
         prompt = f"다음 영양소가 부족합니다: {nutrient_info}. 이 영양소를 보충할 수 있는 요리 메뉴 이름만 알려주세요."
@@ -27,17 +26,20 @@ class GetInfo:
         response = self.client.chat.completions.create(
             model=self.model,
             messages=[
-                {"role": "system", "name":"example_user", "content": "다음 영양소가 부족합니다: calories: 100g, protein: 25g. 이 영양소를 보충할 수 있는 요리 메뉴 이름만 알려주세요."},
-                {"role": "system", "name": "example_assistant", "content": "닭 가슴살 샐러드"},
-                {"role": "user", "content": prompt}
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": "추천 음식은 무엇입니까?"}
             ],
             max_tokens=self.max_tokens
         )
 
-        # 응답 반환
-        return response.choices[0].message.content
+        # 응답에서 텍스트 추출
+        # 'message' 객체가 아닌 'text' 속성을 사용하여 텍스트 내용을 추출
+        recommended_food = response.choices[0].message.content.strip()  # 'message.content' 속성 사용
+
+        return recommended_food
+
+        
     
-    # input : 음식 이름 | output : 영양소 정보 딕셔너리
     def get_info_openapi(self, food_name):
         
         # openapi 사용해서 영양소 xml data 받아옴
@@ -112,3 +114,4 @@ if __name__ == "__main__":
     
     recommendation = info_getter.get_info_gpt(nutrient_deficiencies)
     print(recommendation)
+
