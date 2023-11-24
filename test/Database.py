@@ -4,14 +4,30 @@ class Database:
 
     # 데이터베이스 연결 설정 
     # 연결 매개변수(호스트, 사용자 이름, 비밀번호, 데이터베이스 이름)를 사용하여 데이터베이스에 연결
-    def __init__(self, host, user, password, db):
-        self.connection = pymysql.connect(host=host,
-                                          user=user,
-                                          password=password,
-                                          db=db,
+    # def __init__(self, host, user, password, db):
+    #     self.connection = pymysql.connect(host=host,
+    #                                       user=user,
+    #                                       password=password,
+    #                                       db=db,
+    #                                       charset='utf8mb4',
+    #                                       cursorclass=pymysql.cursors.DictCursor)
+    #     self.cursor = self.connection.cursor()
+
+    def __init__(self):
+        self.connection = pymysql.connect(host="database-1.cqviy5dwn8yf.us-east-2.rds.amazonaws.com",
+                                          user="admin",
+                                          password="pposim2023",
+                                          db="PPOSIM",
                                           charset='utf8mb4',
                                           cursorclass=pymysql.cursors.DictCursor)
         self.cursor = self.connection.cursor()
+
+    # def database_init(cls):
+    #     return cls(host="database-1.cqviy5dwn8yf.us-east-2.rds.amazonaws.com",
+    #                 user="admin",
+    #                 password="pposim2023",
+    #                 db="PPOSIM")
+
 
     # 쿼리 실행
     # SQL 쿼리를 실행하는 함수를 정의
@@ -25,9 +41,9 @@ class Database:
 
     # 데이터 조회
     # 데이터베이스에서 데이터를 조회하고 결과를 반환하는 함수를 정의
-    def fetch_data(self, query):
+    def fetch_data(self, query, params=None):
         try:
-            self.cursor.execute(query)
+            self.cursor.execute(query, params)
             return self.cursor.fetchall()
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -88,16 +104,19 @@ class Database:
 # insert_query = "INSERT INTO test_users (username, email) VALUES (%s, %s)"
 # data = ("testuser", "testuser@example.com")
 # db.insert_data(insert_query, data)
+# print("1")
 
 # # 데이터 조회
 # select_query = "SELECT * FROM test_users"
 # results = db.fetch_data(select_query)
 # for result in results:
 #     print(result)
+# print("2")
 
 # # 테스트용 테이블 삭제 
 # drop_table_query = "DROP TABLE test_users;"
 # db.execute_query(drop_table_query)
+# print("3")
 
 # # 테이블 삭제 확인
 # check_table_query = "SHOW TABLES LIKE 'test_users';"
@@ -106,6 +125,7 @@ class Database:
 #     print("The table was not deleted.")
 # else:
 #     print("The table has been successfully deleted.")
+# print("4")
 
 # # 연결 종료
 # db.close()
