@@ -59,4 +59,8 @@ class EventHandler:
         dialog = UserDetailsDialog()
         if dialog.exec_():
             user_details = dialog.get_user_info()
-            self.app.user_credentials[user_id]['details'] = user_details
+            # Database 클래스의 update_user_details 메소드를 사용하여 세부 정보를 데이터베이스에 저장
+            if self.db.update_user_details(user_id, user_details):
+                QMessageBox.information(self.app, '회원 정보 등록 완료', '사용자 세부 정보가 업데이트되었습니다.')
+            else:
+                QMessageBox.critical(self.app, '회원 정보 등록 실패', '데이터베이스 오류가 발생했습니다.')

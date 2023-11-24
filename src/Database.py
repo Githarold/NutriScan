@@ -151,3 +151,55 @@ class Database:
             })
 
         return {user_id: user_data}  # 사용자 ID를 최상위 키로 사용하여 반환
+
+    def update_user_details(self, user_id, user_details):
+        # 데이터베이스에 사용자 세부 정보를 업데이트하는 쿼리
+        query = """
+        UPDATE users SET name=%s, gender=%s, age=%s, weight=%s, height=%s, allergies=%s
+        WHERE user_id=%s
+        """
+        data = (
+            user_details['name'],
+            user_details['gender'],
+            user_details['age'],
+            user_details['weight'],
+            user_details['height'],
+            user_details['allergies'],
+            user_id,
+        )
+        try:
+            self.cursor.execute(query, data)
+            self.connection.commit()
+            return True  # 정보 업데이트 성공
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            self.connection.rollback()
+            return False  # 정보 업데이트 실패
+
+    def delete_user_data(self, user_id):
+        # 사용자의 식단 정보를 삭제하는 쿼리
+        delete_diet_query = "DELETE FROM diet WHERE user_id = %s"
+        # 사용자의 기본 정보를 삭제하는 쿼리
+        delete_user_query = "DELETE FROM users WHERE user_id = %s"
+
+        try:
+            # 먼저 사용자의 식단 정보를 삭제합니다.
+            self.cursor.execute(delete_diet_query, (user_id,))
+            # 다음으로 사용자의 기본 정보를 삭제합니다.
+            self.cursor.execute(delete_user_query, (user_id,))
+            # 모든 삭제 작업이 성공하면 변경 사항을 커밋합니다.
+            self.connection.commit()
+            return True  # 데이터 삭제 성공
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            # 오류가 발생하면 롤백을 수행합니다.
+            self.connection.rollback()
+            return False  # 데이터 삭제 실패
+        
+# db = Database()
+# user_id = 'grwise0906'
+# success = db.delete_user_data(user_id)
+# if success:
+#     print(f"{user_id} 사용자의 데이터가 성공적으로 삭제되었습니다.")
+# else:
+#     print(f"{user_id} 사용자의 데이터 삭제 중 오류가 발생했습니다.")
