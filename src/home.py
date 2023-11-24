@@ -1,5 +1,6 @@
 # 필요한 모듈들을 불러옵니다
 from PyQt5.QtWidgets import *
+import os
 from datetime import datetime
 from UpdateInfoDialog import UpdateInfoDialog
 from FoodTextUploadDialog import FoodTextUploadDialog
@@ -7,6 +8,9 @@ from FoodImageUploadDialog import FoodImageUploadDialog
 from DietInfoDialog import DietInfoDialog
 from BMRinfoDialog import BMRInfoDialog
 from ExcelExporter import ExcelExporter
+from FoodRecommendationDialog import FoodRecommendationDialog
+import json
+
 
 
 
@@ -56,6 +60,16 @@ class Home(QDialog):
         self.export_excel_button.clicked.connect(self.export_to_excel)
         layout.addWidget(self.export_excel_button)
 
+        # '음식 추천 받기' 버튼
+        self.recommend_food_button = QPushButton('음식 추천 받기', self)
+        self.recommend_food_button.clicked.connect(self.open_food_recommendation_dialog)
+        layout.addWidget(self.recommend_food_button)
+
+        # '시스템 종료하기' 버튼
+        self.exit_system_button = QPushButton('시스템 종료하기', self)
+        self.exit_system_button.clicked.connect(self.export_credentials_and_exit)
+        layout.addWidget(self.exit_system_button)
+
         self.setLayout(layout)
 
     def upload_food_text(self):
@@ -68,7 +82,7 @@ class Home(QDialog):
 
     def show_diet_info(self):
         diet_data = self.user_credentials.get(self.user_id, {}).get('diet', {})
-        dialog = DietInfoDialog(diet_data)
+        dialog = DietInfoDialog(diet_data, self.user_id)
         dialog.exec_()
 
     def update_info(self):
@@ -83,3 +97,25 @@ class Home(QDialog):
         # ExcelExporter 다이얼로그를 생성하고 실행합니다.
         exporter_dialog = ExcelExporter(self.user_credentials)
         exporter_dialog.exec_()
+
+    def open_food_recommendation_dialog(self):
+        dialog = FoodRecommendationDialog(self.user_credentials, self.user_id)
+        dialog.exec_()
+
+    def export_credentials_and_exit(self):
+        self.export_user_credentials()
+        self.close()  # 다이얼로그 닫기
+
+    def export_user_credentials(self):
+        # 사용자 자격 증명 데이터를 JSON 파일로 저장
+        file_path = os.path.join(os.getcwd(), 'user_credentials.json')
+        with open(file_path, 'w') as file:
+            json.dumps(self.user_credentials, ensure_ascii=False, indent=4)
+        
+        # 콘솔에 사용자 자격 증명 데이터 출력
+        print("사용자 자격 증명 데이터:")
+        print(json.dumps(self.user_credentials, ensure_ascii=False, indent=4))
+
+
+        QMessageBox.information(self, '정보 내보내기', f'사용자 정보가 {file_path}에 저장되었습니다.')
+        

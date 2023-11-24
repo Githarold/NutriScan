@@ -53,7 +53,7 @@ class FoodTextUploadDialog(QDialog):
             return
 
         # 음식 정보 검색
-        food_info = search_food_nutrition('/Users/you-seungwon/Desktop/sbjb2/nutritioninfo.xlsx', food_name)
+        food_info = search_food_nutrition('/Users/you-seungwon/Desktop/sbjb/nutritioninfo.xlsx', food_name)
         if not food_info:
             # 영양 정보 수동 입력 대화상자 열기
             manual_input_dialog = ManualNutritionInputDialog(food_name)
@@ -62,7 +62,9 @@ class FoodTextUploadDialog(QDialog):
                     '칼로리': manual_input_dialog.calories_input.text(),
                     '탄수화물': manual_input_dialog.carbs_input.text(),
                     '지방': manual_input_dialog.fat_input.text(),
-                    '단백질': manual_input_dialog.protein_input.text()
+                    '단백질': manual_input_dialog.protein_input.text(),
+                    '당류': manual_input_dialog.sugar_input.text(),  # 당류 정보 추가
+                    '나트륨': manual_input_dialog.sodium_input.text() 
                 }
             else:
                 return  # 사용자가 입력을 취소함

@@ -25,13 +25,23 @@ class BMRInfoDialog(QDialog):
         weight = float(user_details.get('weight', 0))
         height = float(user_details.get('height', 0))
         gender = user_details.get('gender', '남성')
-
+        
         if age == 0 or weight == 0 or height == 0:
             self.bmr_label.setText('나이, 체중, 키 정보가 필요합니다.')
             return
 
         bmr = self.calculate_bmr(gender, age, weight, height)
         self.bmr_label.setText(f'기초대사량: {bmr} kcal')
+        carbs_cal, protein_cal, fats_cal = self.calculate_nutrient_calories(bmr)
+        carbs_grams = carbs_cal / 4  # 탄수화물 1g 당 4kcal
+        protein_grams = protein_cal / 4  # 단백질 1g 당 4kcal
+        fats_grams = fats_cal / 9  # 지방 1g 당 9kcal
+
+        nutrient_info = (f"탄수화물: {round(carbs_grams, 2)}g, "
+                         f"단백질: {round(protein_grams, 2)}g, "
+                         f"지방: {round(fats_grams, 2)}g")
+        self.bmr_label.setText(f'기초대사량: {bmr} kcal\n' + nutrient_info)
+
 
     def calculate_bmr(self, gender, age, weight, height):
         if gender == '남성':
@@ -41,3 +51,9 @@ class BMRInfoDialog(QDialog):
         else:
             bmr = (88.362 + 447.593) / 2 + ((13.397 + 9.247) / 2 * weight) + ((4.799 + 3.098) / 2 * height) - ((5.677 + 4.330) / 2 * age)
         return round(bmr, 2)
+
+    def calculate_nutrient_calories(self, bmr):
+        carbs_cal = bmr * 0.5  # 탄수화물 50%
+        protein_cal = bmr * 0.3  # 단백질 30%
+        fats_cal = bmr * 0.2  # 지방 20%
+        return carbs_cal, protein_cal, fats_cal

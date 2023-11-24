@@ -40,6 +40,8 @@ class ExcelExporter(QDialog):
                                 'carbs': meal.get('nutrition', {}).get('탄수화물', ''),
                                 'protein': meal.get('nutrition', {}).get('단백질', ''),
                                 'fat': meal.get('nutrition', {}).get('지방', ''),
+                                'sugar': meal.get('nutrition', {}).get('당류', ''),
+                                'sodium': meal.get('nutrition', {}).get('나트륨', ''),
                                 'image_url': meal.get('image_url', '')
                             })
                             data.append(meal_data)
@@ -53,6 +55,8 @@ class ExcelExporter(QDialog):
                     'carbs': '',
                     'protein': '',
                     'fat': '',
+                    'sugar': '',
+                    'sodium': '',
                     'image_url': ''
                 })
                 data.append(user_data)
@@ -63,3 +67,4 @@ class ExcelExporter(QDialog):
         filename = 'user_credentials.xlsx'
         df.to_excel(filename, index=False)
         QMessageBox.information(self, '내보내기 완료', f'사용자 정보가 "{filename}" 파일로 저장되었습니다.')
+        print(self.user_credentials)

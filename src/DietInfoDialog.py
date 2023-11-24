@@ -1,10 +1,13 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QComboBox
+from PyQt5.QtWidgets import *
+from EditDietInfoDialog import EditDietInfoDialog
 
 class DietInfoDialog(QDialog):
-    def __init__(self, diet_data):
+    def __init__(self, diet_data, user_id):
         super().__init__()
         self.diet_data = diet_data
+        self.user_id = user_id  # 사용자 ID를 저장
         self.initUI()
+
 
     def initUI(self):
         self.setWindowTitle('식단 정보 확인')
@@ -23,6 +26,10 @@ class DietInfoDialog(QDialog):
 
         # 초기 식단 정보 표시
         self.display_diet_info(0)
+
+        self.edit_button = QPushButton('식단 정보 수정', self)
+        self.edit_button.clicked.connect(self.open_edit_dialog)
+        layout.addWidget(self.edit_button)
         self.setLayout(layout)
 
     def display_diet_info(self, index):
@@ -39,8 +46,17 @@ class DietInfoDialog(QDialog):
                     diet_info += (f"  - {food_name} (칼로리: {nutrition.get('칼로리', 'N/A')}, "
                                   f"탄수화물: {nutrition.get('탄수화물', 'N/A')}, "
                                   f"지방: {nutrition.get('지방', 'N/A')}, "
-                                  f"단백질: {nutrition.get('단백질', 'N/A')})\n")
+                                  f"단백질: {nutrition.get('단백질', 'N/A')}, "
+                                  f"당류: {nutrition.get('당류', 'N/A')}, "  # 당류 정보 추가
+                                  f"나트륨: {nutrition.get('나트륨', 'N/A')}")  # 나트륨 정보 추가
+                    diet_info += "\n"
                 else:
                     # 문자열 형태인 경우 (영양 정보 없음)
                     diet_info += f"  - {food}\n"
-            self.diet_info_label.setText(diet_info)
+        self.diet_info_label.setText(diet_info)
+
+    def open_edit_dialog(self):
+        edit_dialog = EditDietInfoDialog(self.diet_data)
+        if edit_dialog.exec_():
+            self.diet_data = edit_dialog.get_diet_data()  # 변경 사항을 받아옴
+            self.display_diet_info(self.date_combo.currentIndex())  # 식단 정보 업데이트
