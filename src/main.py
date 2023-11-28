@@ -2,14 +2,17 @@ import sys
 from PyQt5.QtWidgets import *
 from ui_manager import UIManager
 from event_handler import EventHandler
+from Database import Database
 
 class MyApp(QWidget):
     def __init__(self):
         super().__init__()
+        self.db = Database()
         self.user_credentials = {}
         self.ui_manager = UIManager(self)
         self.event_handler = EventHandler(self)
         self.initUI()
+
 
     def initUI(self):
         self.setWindowTitle('식단관리프로그램')

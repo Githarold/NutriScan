@@ -1,5 +1,7 @@
 python-dotenv
 openai
 pymysql
-pandas openpyxl
+pandas 
+openpyxl
 PyQt5
+requests
