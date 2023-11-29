@@ -93,25 +93,25 @@ if __name__ == "__main__":
     # GetInfo 클래스 인스턴스 생성
     info_getter = GetInfo()
 
-    # # 테스트하고 싶은 음식 이름
-    # food_name = "개고기"
+    # 테스트하고 싶은 음식 이름
+    food_name = "닭갈비"
 
-    # # 영양소 정보 조회
-    # nutritional_info = info_getter.get_info_openapi(food_name)
+    # 영양소 정보 조회
+    nutritional_info = info_getter.get_info_openapi(food_name)
 
-    # # 결과 출력
-    # if nutritional_info.get('error'):
-    #     print("Error:", nutritional_info.get('message'))
-    # else:
-    #     print("Nutritional Information for", food_name, ":")
-    #     for nutrient, value in nutritional_info.get('nutritional_info').items():
-    #         print(f"{nutrient}: {value}")
+    # 결과 출력
+    if nutritional_info.get('error'):
+        print("Error:", nutritional_info.get('message'))
+    else:
+        print("Nutritional Information for", food_name, ":")
+        for nutrient, value in nutritional_info.get('nutritional_info').items():
+            print(f"{nutrient}: {value}")
     
-    nutrient_deficiencies = {
-        "calories": "100g",
-        "protein": "25g"
-    }  # 부족한 영양소와 양
+    # nutrient_deficiencies = {
+    #     "calories": "100g",
+    #     "protein": "25g"
+    # }  # 부족한 영양소와 양
     
-    recommendation = info_getter.get_info_gpt(nutrient_deficiencies)
-    print(recommendation)
+    # recommendation = info_getter.get_info_gpt(nutrient_deficiencies)
+    # print(recommendation)
 
