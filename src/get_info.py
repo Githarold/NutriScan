@@ -74,21 +74,20 @@ class GetInfo:
         saturated_fat = float(soup.find('NUTR_CONT8').text)
         trans_fat = float(soup.find('NUTR_CONT9').text)
 
-        # 데이터를 사전 형태로 저장
+        # 데이터를 사전 형태로 저장, 키를 한글로 변경
         nutritional_info = {
-            'calories': calories,
-            'carbohydrates': carbohydrates,
-            'protein': protein,
-            'fat': fat,
-            'sugars': sugars,
-            'sodium': sodium,
-            'cholesterol': cholesterol,
-            'saturated_fat': saturated_fat,
-            'trans_fat': trans_fat
+            '칼로리': calories,
+            '탄수화물': carbohydrates,
+            '단백질': protein,
+            '지방': fat,
+            '당류': sugars,
+            '나트륨': sodium,
+            '콜레스테롤': cholesterol,
+            '포화지방': saturated_fat,
+            '트랜스지방': trans_fat
         }
 
         return {"error": False, "nutritional_info": nutritional_info}
-    
 if __name__ == "__main__":
     # GetInfo 클래스 인스턴스 생성
     info_getter = GetInfo()

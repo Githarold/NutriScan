@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QComboBox, 
 from datetime import datetime
 import pandas as pd
 from ManualNutritionInputDialog import ManualNutritionInputDialog
+from get_info import GetInfo
 
 def search_food_nutrition(file_path, food_name):
     # 엑셀 파일을 DataFrame으로 읽기
@@ -20,6 +21,7 @@ class FoodTextUploadDialog(QDialog):
         self.user_credentials = user_credentials
         self.user_id = user_id
         self.initUI()
+        self.info_getter = GetInfo()
 
     def initUI(self):
         self.setWindowTitle('음식 텍스트 업로드')  
@@ -52,10 +54,10 @@ class FoodTextUploadDialog(QDialog):
             QMessageBox.warning(self, '입력 오류', '음식 이름을 입력해주세요.')
             return
 
-        # 음식 정보 검색
-        food_info = search_food_nutrition('./nutritioninfo.xlsx', food_name)
-        if not food_info:
-            # 영양 정보 수동 입력 대화상자 열기
+        # OpenAPI를 통해 영양 정보 조회
+        nutritional_info = self.query_nutritional_info(food_name)
+        if nutritional_info.get('error'):
+            # OpenAPI에서 정보를 찾지 못한 경우, 수동 입력
             manual_input_dialog = ManualNutritionInputDialog(food_name)
             if manual_input_dialog.exec_():
                 food_info = {
@@ -63,11 +65,14 @@ class FoodTextUploadDialog(QDialog):
                     '탄수화물': manual_input_dialog.carbs_input.text(),
                     '지방': manual_input_dialog.fat_input.text(),
                     '단백질': manual_input_dialog.protein_input.text(),
-                    '당류': manual_input_dialog.sugar_input.text(),  # 당류 정보 추가
-                    '나트륨': manual_input_dialog.sodium_input.text() 
+                    '당류': manual_input_dialog.sugar_input.text(),
+                    '나트륨': manual_input_dialog.sodium_input.text()
                 }
             else:
                 return  # 사용자가 입력을 취소함
+        else:
+            # OpenAPI에서 정보를 찾은 경우
+            food_info = nutritional_info['nutritional_info']
 
         # 유저 식단 정보 업데이트
         user_diet = self.user_credentials[self.user_id].setdefault('diet', {})
@@ -80,3 +85,6 @@ class FoodTextUploadDialog(QDialog):
 
         QMessageBox.information(self, '음식 업로드', f'{meal_time} 식단에 "{food_name}"이(가) 추가되었습니다.')
         self.accept()
+
+    def query_nutritional_info(self, food_name):
+            return self.info_getter.get_info_openapi(food_name)
