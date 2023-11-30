@@ -14,9 +14,12 @@ class Database:
 
     # 쿼리 실행
     # SQL 쿼리를 실행하는 함수를 정의
-    def execute_query(self, query):
+    def execute_query(self, query, params=None):
         try:
-            self.cursor.execute(query)
+            if params:
+                self.cursor.execute(query, params)
+            else:
+                self.cursor.execute(query)
             self.connection.commit()
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -179,41 +182,51 @@ class Database:
 
     def save_user_credentials(self, user_credentials):
         for user_id, credentials in user_credentials.items():
-            # details 키가 있는지 확인하고, 없으면 빈 딕셔너리를 할당
+            # 사용자 세부 정보
             user_details = credentials.get('details', {})
-            # 필수 키들에 대해 기본값을 확인하거나 할당
             name = user_details.get('name', '')
             gender = user_details.get('gender', '')
             age = user_details.get('age', 0)
             weight = user_details.get('weight', 0)
             height = user_details.get('height', 0)
             allergies = user_details.get('allergies', '')
-            # 식단 정보를 JSON 문자열로 변환
-            diet_json = json.dumps(credentials.get('diet', {}), ensure_ascii=False)
-            
-            # 데이터베이스에 사용자 정보가 이미 존재하는지 확인
-            if self.check_user_exists(user_id):
-                # 기존 사용자 정보를 업데이트
-                self.update_user_details(user_id, {
-                    'name': name,
-                    'gender': gender,
-                    'age': age,
-                    'weight': weight,
-                    'height': height,
-                    'allergies': allergies
-                })
-            else:
-                # 새로운 사용자 정보를 삽입
-                insert_query = """
-                INSERT INTO users (user_id, password, details, diet) 
-                VALUES (%s, %s, %s, %s)
-                ON DUPLICATE KEY UPDATE
-                password=VALUES(password),
-                details=VALUES(details),
-                diet=VALUES(diet)
-                """
-                self.insert_data(insert_query, (user_id, credentials['password'], json.dumps(user_details), diet_json))
 
+        # 데이터베이스에 사용자 정보가 이미 존재하는지 확인
+        if self.check_user_exists(user_id):
+            # 기존 사용자 정보를 업데이트
+            update_query = """
+            UPDATE users SET name=%s, gender=%s, age=%s, weight=%s, height=%s, allergies=%s
+            WHERE user_id=%s
+            """
+            self.update_data(update_query, (name, gender, age, weight, height, allergies, user_id))
+        else:
+            # 새로운 사용자 정보를 삽입
+            insert_query = """
+            INSERT INTO users (user_id, password, name, gender, age, weight, height, allergies) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            password = credentials.get('password', '')
+            self.insert_data(insert_query, (user_id, password, name, gender, age, weight, height, allergies))
+    # 'diet' 정보 처리
+         # 사용자의 기존 'diet' 데이터 삭제
+        delete_diet_query = "DELETE FROM diet WHERE user_id = %s"
+        self.execute_query(delete_diet_query, (user_id,))
+
+        # 새로운 'diet' 정보 삽입
+        for date, meals in credentials.get('diet', {}).items():
+            for meal_time, foods in meals.items():
+                for food in foods:
+                    insert_query = """
+                    INSERT INTO diet (user_id, date, meal_time, food_name, calories, carbs, fat, protein, sugar, sodium)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """
+                    nutrition = food['nutrition']
+                    diet_data = (
+                        user_id, date, meal_time, food['name'],
+                        nutrition['칼로리'], nutrition['탄수화물'], nutrition['지방'],
+                        nutrition['단백질'], nutrition['당류'], nutrition['나트륨']
+                    )
+                    self.insert_data(insert_query, diet_data)
     def delete_user_data(self, user_id):
         # 사용자의 식단 정보를 삭제하는 쿼리
         delete_diet_query = "DELETE FROM diet WHERE user_id = %s"
