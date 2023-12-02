@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import *
 
 from datetime import datetime
-from get_info import GetInfo
+from RecommandFood import Recommander
 
 class FoodRecommendationDialog(QDialog):
     def __init__(self, user_credentials, user_id):
@@ -94,7 +94,7 @@ class FoodRecommendationDialog(QDialog):
         user_name = self.get_user_name()
 
         # GetInfo 클래스 인스턴스 생성 및 추천 받기
-        info_getter = GetInfo()
+        info_getter = Recommander()
         recommended_food = info_getter.get_info_gpt(remaining_nutrients)
 
         # 추천 음식 다이얼로그에 표시

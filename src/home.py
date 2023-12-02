@@ -12,9 +12,6 @@ from FoodRecommendationDialog import FoodRecommendationDialog
 from Database import Database
 import json
 
-
-
-
 # Home 클래스
 class Home(QDialog):
     def __init__(self, user_id, user_credentials):
@@ -28,9 +25,7 @@ class Home(QDialog):
         user_name = self.user_credentials.get(self.user_id, {}).get('details', {}).get('name', 'Unknown User')
         self.setWindowTitle(f'{user_name}의 Home')  
         self.setGeometry(100, 100, 400, 300)  
-        layout = QVBoxLayout()  
-
-
+        layout = QVBoxLayout()
 
         # '음식 텍스트 업로드' 버튼
         self.upload_food_text_button = QPushButton('음식 텍스트 업로드', self)

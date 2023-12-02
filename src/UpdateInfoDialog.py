@@ -1,8 +1,5 @@
 from PyQt5.QtWidgets import *
 
-
-
-
 class UpdateInfoDialog(QDialog):
     def __init__(self, user_credentials, user_id):
         super().__init__()

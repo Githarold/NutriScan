@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QComboBox, 
 from datetime import datetime
 import pandas as pd
 from ManualNutritionInputDialog import ManualNutritionInputDialog
-from get_info import GetInfo
+from GetFoodNutrient import Parser
 
 def search_food_nutrition(file_path, food_name):
     # 엑셀 파일을 DataFrame으로 읽기
@@ -21,7 +21,7 @@ class FoodTextUploadDialog(QDialog):
         self.user_credentials = user_credentials
         self.user_id = user_id
         self.initUI()
-        self.info_getter = GetInfo()
+        self.info_getter = Parser()
 
     def initUI(self):
         self.setWindowTitle('음식 텍스트 업로드')  
