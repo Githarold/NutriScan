@@ -14,20 +14,21 @@ class GetInfo:
         print(self.client)
         
         self.model = "gpt-3.5-turbo"
-        self.max_tokens = 30
+        self.max_tokens = 35
     
     # input : 부족 영양소 정보 딕셔너리 | output : 추천 음식 문자열
     def get_info_gpt(self, deficient_nutrients):
         # 부족한 영양소와 양을 문장으로 변환
         nutrient_info = ", ".join([f"{nutrient}: {amount}" for nutrient, amount in deficient_nutrients.items()])
-        prompt = f"다음 영양소가 부족합니다: {nutrient_info}. 이 영양소를 보충할 수 있는 요리 메뉴 이름만 알려주세요."
+        prompt = f"다음 영양소가 부족합니다: {nutrient_info}. 이 영양소를 보충할 수 있는 요리 메뉴 하나만 알려주세요."
 
         # 메시지 형식으로 요청 생성
         response = self.client.chat.completions.create(
             model=self.model,
             messages=[
-                {"role": "system", "content": prompt},
-                {"role": "user", "content": "추천 음식은 무엇입니까?"}
+                {"role": "system", "name":"example_user", "content": "다음 영양소가 부족합니다: calories: 100g, protein: 25g. 이 영양소를 보충할 수 있는 요리 메뉴 이름만 알려주세요."},
+                {"role": "system", "name": "example_assistant", "content": "닭 가슴살 샐러드"},
+                {"role": "user", "content": prompt}
             ],
             max_tokens=self.max_tokens
         )
@@ -37,8 +38,6 @@ class GetInfo:
         recommended_food = response.choices[0].message.content.strip()  # 'message.content' 속성 사용
 
         return recommended_food
-
-        
     
     def get_info_openapi(self, food_name):
         
@@ -63,16 +62,20 @@ class GetInfo:
             if result_code != "INFO-000":
                 return {"error": True, "code": result_code, "message": result_msg}
 
-        # 필요한 영양소 정보 추출 및 float로 변환
-        calories = float(soup.find('NUTR_CONT1').text)
-        carbohydrates = float(soup.find('NUTR_CONT2').text)
-        protein = float(soup.find('NUTR_CONT3').text)
-        fat = float(soup.find('NUTR_CONT4').text)
-        sugars = float(soup.find('NUTR_CONT5').text)
-        sodium = float(soup.find('NUTR_CONT6').text)
-        cholesterol = float(soup.find('NUTR_CONT7').text)
-        saturated_fat = float(soup.find('NUTR_CONT8').text)
-        trans_fat = float(soup.find('NUTR_CONT9').text)
+        # 필요한 영양소 정보 추출 및 float로 변환        
+        def get_nutrient_value(tag_name):
+            tag = soup.find(tag_name)
+            return float(tag.text) if tag and tag.text else 0.0
+
+        calories = get_nutrient_value('NUTR_CONT1')
+        carbohydrates = get_nutrient_value('NUTR_CONT2')
+        protein = get_nutrient_value('NUTR_CONT3')
+        fat = get_nutrient_value('NUTR_CONT4')
+        sugars = get_nutrient_value('NUTR_CONT5')
+        sodium = get_nutrient_value('NUTR_CONT6')
+        cholesterol = get_nutrient_value('NUTR_CONT7')
+        saturated_fat = get_nutrient_value('NUTR_CONT8')
+        trans_fat = get_nutrient_value('NUTR_CONT9')        
 
         # 데이터를 사전 형태로 저장, 키를 한글로 변경
         nutritional_info = {
@@ -88,29 +91,29 @@ class GetInfo:
         }
 
         return {"error": False, "nutritional_info": nutritional_info}
+    
 if __name__ == "__main__":
     # GetInfo 클래스 인스턴스 생성
     info_getter = GetInfo()
 
-    # 테스트하고 싶은 음식 이름
-    food_name = "닭갈비"
+    # # 테스트하고 싶은 음식 이름
+    # food_name = "귤"
 
-    # 영양소 정보 조회
-    nutritional_info = info_getter.get_info_openapi(food_name)
+    # # 영양소 정보 조회
+    # nutritional_info = info_getter.get_info_openapi(food_name)
 
-    # 결과 출력
-    if nutritional_info.get('error'):
-        print("Error:", nutritional_info.get('message'))
-    else:
-        print("Nutritional Information for", food_name, ":")
-        for nutrient, value in nutritional_info.get('nutritional_info').items():
-            print(f"{nutrient}: {value}")
+    # # 결과 출력
+    # if nutritional_info.get('error'):
+    #     print("Error:", nutritional_info.get('message'))
+    # else:
+    #     print("Nutritional Information for", food_name, ":")
+    #     for nutrient, value in nutritional_info.get('nutritional_info').items():
+    #         print(f"{nutrient}: {value}")
     
-    # nutrient_deficiencies = {
-    #     "calories": "100g",
-    #     "protein": "25g"
-    # }  # 부족한 영양소와 양
+    nutrient_deficiencies = {
+        "calories": "100g",
+        "protein": "25g"
+    }  # 부족한 영양소와 양
     
-    # recommendation = info_getter.get_info_gpt(nutrient_deficiencies)
-    # print(recommendation)
-
+    recommendation = info_getter.get_info_gpt(nutrient_deficiencies)
+    print(recommendation)
