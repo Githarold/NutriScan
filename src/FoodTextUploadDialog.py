@@ -57,6 +57,7 @@ class FoodTextUploadDialog(QDialog):
         # OpenAPI를 통해 영양 정보 조회
         nutritional_info = self.query_nutritional_info(food_name)
         if nutritional_info.get('error'):
+            
             # OpenAPI에서 정보를 찾지 못한 경우, 수동 입력
             manual_input_dialog = ManualNutritionInputDialog(food_name)
             if manual_input_dialog.exec_():
