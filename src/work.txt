@@ -1,3 +1,0 @@
-main.py -> user_credential 형태를 DB에 저장해야함 (사용자 개인정보)
-
-
