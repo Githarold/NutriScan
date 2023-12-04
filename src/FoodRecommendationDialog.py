@@ -22,21 +22,21 @@ class FoodRecommendationDialog(QDialog):
 
         # 사용자 섭취량 라벨
         user_name = self.user_credentials.get(self.user_id, {}).get('details', {}).get('name', 'Unknown User')
-        total_calories = self.calculate_total_calories()
+        total_calories = round(self.calculate_total_calories())
         self.intake_label = QLabel(f"오늘 {user_name}님의 섭취량은 {total_calories} 칼로리입니다.", self)
         layout.addWidget(self.intake_label)
 
         # '남은 섭취량' 라벨 추가
-        remaining_intake = self.calculate_remaining_intake()
+        remaining_intake = round(self.calculate_remaining_intake())
         self.remaining_intake_label = QLabel(f"{self.get_user_name()}님의 현재 남은 섭취량은 {remaining_intake}칼로리입니다.", self)
         layout.addWidget(self.remaining_intake_label)
-        
+
         # '영양소별 남은 섭취량' 라벨 추가
         remaining_nutrients = self.calculate_remaining_nutrient_intake()
         self.remaining_nutrition_intake_label = QLabel(
-            f"남은 탄수화물: {remaining_nutrients['carbs']}g, "
-            f"단백질: {remaining_nutrients['protein']}g, "
-            f"지방: {remaining_nutrients['fats']}g", self)
+            f"남은 탄수화물: {round(remaining_nutrients['carbs'])}g, "
+            f"단백질: {round(remaining_nutrients['protein'])}g, "
+            f"지방: {round(remaining_nutrients['fats'])}g", self)
         layout.addWidget(self.remaining_nutrition_intake_label)
 
 

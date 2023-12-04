@@ -106,22 +106,31 @@ class FoodImageUploadDialog(QDialog):
         QMessageBox.information(self, '음식 정보 추가', f'{meal_time} 식단에 입력된 음식들이 추가되었습니다.')
         self.accept()
 
-    def open_manual_nutrition_input_dialog(self, food_name):
-        dialog = ManualNutritionInputDialog(food_name)
-        if dialog.exec_():
-            nutrition_info = dialog.get_nutrition_info()
-            self.save_nutrition_info(food_name, {
-                '칼로리': float(nutrition_info['calories']),
-                '탄수화물': float(nutrition_info['carbs']),
-                '지방': float(nutrition_info['fat']),
-                '단백질': float(nutrition_info['protein']),
-                '당류': float(nutrition_info['sugar']),
-                '나트륨': float(nutrition_info['sodium'])
-            })
-            return True
+    def open_manual_nutrition_input_dialog(self):
+        food_name, ok = QInputDialog.getText(self, '음식 이름 입력', '음식 이름을 입력하세요:')
+        if ok and food_name:
+            nutritional_info = self.query_nutritional_info(food_name)
+            if not nutritional_info.get('error'):
+                # OpenAPI에서 영양 정보를 찾은 경우
+                self.save_nutrition_info(food_name, nutritional_info["nutritional_info"])
+            else:
+                # 영양소 정보가 없을 경우, 사용자에게 직접 입력 요청
+                dialog = ManualNutritionInputDialog(food_name)
+                if dialog.exec_():
+                    nutrition_info = dialog.get_nutrition_info()
+                    self.save_nutrition_info(food_name, {
+                        '칼로리': float(nutrition_info['calories']),
+                        '탄수화물': float(nutrition_info['carbs']),
+                        '지방': float(nutrition_info['fat']),
+                        '단백질': float(nutrition_info['protein']),
+                        '당류': float(nutrition_info['sugar']),
+                        '나트륨': float(nutrition_info['sodium'])
+                    })
+                    return True
         return False
 
     def save_nutrition_info(self, food_name, nutrition_info):
+        # 이전에 정의된 save_nutrition_info 메서드 내용
         meal_time = self.meal_time_combo.currentText()
         current_date = datetime.now().strftime("%Y-%m-%d")
         user_diet = self.user_credentials[self.user_id].setdefault('diet', {})
@@ -133,6 +142,17 @@ class FoodImageUploadDialog(QDialog):
         daily_diet[meal_time].append(food_info)
 
         QMessageBox.information(self, '영양 정보 추가', f'{meal_time} 식단에 "{food_name}"의 영양 정보가 추가되었습니다.')
+
+        # 사용자 정보에 음식 이름 저장
+        self.save_food_name_to_user_credentials(food_name)
+
+    def save_food_name_to_user_credentials(self, food_name):
+        # 사용자 정보에 음식 이름을 저장하는 메서드
+        user_foods = self.user_credentials[self.user_id].setdefault('foods', [])
+        if food_name not in user_foods:
+            user_foods.append(food_name)
+
+
 
     def query_nutritional_info(self, food_name):
         # Parser 클래스를 사용하여 OpenAPI로부터 영양 정보 조회
