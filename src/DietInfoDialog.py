@@ -16,7 +16,9 @@ class DietInfoDialog(QDialog):
 
         # 날짜 선택 콤보 박스
         self.date_combo = QComboBox(self)
-        self.date_combo.addItems(sorted(self.diet_data.keys()))
+        # 날짜를 내림차순으로 정렬
+        sorted_dates = sorted(self.diet_data.keys(), reverse=True)
+        self.date_combo.addItems(sorted_dates)
         self.date_combo.currentIndexChanged.connect(self.display_diet_info)
         layout.addWidget(self.date_combo)
 
@@ -31,6 +33,10 @@ class DietInfoDialog(QDialog):
         self.edit_button.clicked.connect(self.open_edit_dialog)
         layout.addWidget(self.edit_button)
         self.setLayout(layout)
+
+        # 콤보 박스의 초기 선택을 가장 최근 날짜로 설정
+        if sorted_dates:
+            self.date_combo.setCurrentIndex(0)
 
     def display_diet_info(self, index):
         date = self.date_combo.itemText(index)
