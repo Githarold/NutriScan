@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import *
-from ui_manager import UIManager
-from event_handler import EventHandler
+from UIManager import UIManager
+from Login import Login
 from Database import Database
 
 class MyApp(QWidget):
@@ -9,17 +9,17 @@ class MyApp(QWidget):
         super().__init__()
         self.db = Database()
         self.user_credentials = {}
-        self.ui_manager = UIManager(self)
-        self.event_handler = EventHandler(self)
+        self.UIManager = UIManager(self)
+        self.Login = Login(self)
         self.initUI()
 
 
     def initUI(self):
         self.setWindowTitle('식단관리프로그램')
         self.resize(400, 300)
-        self.ui_manager.center()
-        self.ui_manager.create_login_widgets()
-        self.ui_manager.create_buttons()
+        self.UIManager.center()
+        self.UIManager.create_login_widgets()
+        self.UIManager.create_buttons()
         self.show()
 
 if __name__ == '__main__':

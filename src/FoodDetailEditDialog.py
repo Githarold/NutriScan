@@ -31,10 +31,17 @@ class FoodDetailEditDialog (QDialog):
         nutrition = self.food.get('nutrition', {})
         for key, edit in self.nutrition_edits.items():
             value = edit.text()
-            if not value.isdigit():
+            try:
+                # 입력값을 float로 변환을 시도합니다.
+                nutrition_value = float(value)
+            except ValueError:
+                # 변환에 실패할 경우 경고 메시지를 표시합니다.
                 QMessageBox.warning(self, '입력 오류', f'{key}는 숫자로 입력해야 합니다.')
                 return
-            nutrition[key] = int(value)
+
+            # 변환에 성공한 경우, nutrition 사전에 값을 저장합니다.
+            nutrition[key] = nutrition_value
+
         self.food['nutrition'] = nutrition
         self.accept()
 
