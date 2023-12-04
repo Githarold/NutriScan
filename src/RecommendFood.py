@@ -1,9 +1,8 @@
 import os
 from openai import OpenAI
-from bs4 import BeautifulSoup
 from dotenv import load_dotenv, find_dotenv
 
-class Recommander:
+class Recommender:
     
     def __init__(self):
         
