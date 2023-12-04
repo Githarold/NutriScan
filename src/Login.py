@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import *
 from UserDetailsDialog import UserDetailsDialog
-from home import Home
+from HomeDialog import Home
 from Database import Database
 
 class Login:

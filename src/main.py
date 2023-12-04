@@ -19,7 +19,7 @@ class MyApp(QWidget):
         self.resize(400, 300)
         self.UIManager.center()
         self.UIManager.create_login_widgets()
-        self.UIManager.create_buttons()
+        
         self.show()
 
 if __name__ == '__main__':

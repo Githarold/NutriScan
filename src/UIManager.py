@@ -1,26 +1,17 @@
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont, QIcon
 
 class UIManager:
     def __init__(self, app):
         self.app = app
 
     def create_login_widgets(self):
-        # 폰트 및 스타일 설정
-        font = QFont('Arial', 10)
-
         # ID 입력 위젯
         self.app.id_label = QLabel('ID:', self.app)
-        self.app.id_label.setFont(font)
         self.app.id_input = QLineEdit(self.app)
-        self.app.id_input.setFont(font)
 
         # PW 입력 위젯
         self.app.pw_label = QLabel('PW:', self.app)
-        self.app.pw_label.setFont(font)
         self.app.pw_input = QLineEdit(self.app)
-        self.app.pw_input.setFont(font)
         self.app.pw_input.setEchoMode(QLineEdit.Password)
 
         # 레이아웃 설정
@@ -45,17 +36,12 @@ class UIManager:
         self.app.setLayout(main_layout)
 
     def create_buttons(self):
-        # 버튼 스타일 설정
-        button_style = "QPushButton { font-size: 10pt; background-color: #4CAF50; color: white; }"
-
         # 회원가입 버튼
         self.app.signup_button = QPushButton('회원가입하기', self.app)
-        self.app.signup_button.setStyleSheet(button_style)
         self.app.signup_button.clicked.connect(self.app.Login.signup_clicked)
 
         # 로그인 버튼
         self.app.signin_button = QPushButton('로그인하기', self.app)
-        self.app.signin_button.setStyleSheet(button_style)
         self.app.signin_button.clicked.connect(self.app.Login.signin_clicked)
 
         # 버튼 레이아웃
