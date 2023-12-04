@@ -13,7 +13,7 @@ class EditDietInfoDialog(QDialog):
         layout = QVBoxLayout()
 
         self.date_combo = QComboBox(self)
-        self.date_combo.addItems(sorted(self.diet_data.keys()))
+        self.date_combo.addItems(sorted(self.diet_data.keys(), reverse=True))
         self.date_combo.currentIndexChanged.connect(self.update_food_list)
         layout.addWidget(self.date_combo)
 
