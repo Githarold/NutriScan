@@ -40,8 +40,8 @@ class FoodImageUploadDialog(QDialog):
         self.setLayout(layout)
 
     def open_image_upload_site(self):
-        webbrowser.open("http://110.34.114.31:5000")
-
+        #webbrowser.open("http://110.34.114.31:5000")
+        webbrowser.open("http://10.0.33.229:5000")
     def submit_image(self):
         meal_time = self.meal_time_combo.currentText()
         current_date = datetime.now().strftime("%Y-%m-%d")
@@ -77,38 +77,48 @@ class FoodImageUploadDialog(QDialog):
 
     def get_food_name_from_server(self):
         session = requests.Session()
-        response = session.get("http://110.34.114.31:5000/check")
+        response = session.get("http://10.0.33.229:5000/check")
         if response.ok:
-            return response.text
+            # 음식 이름을 띄어쓰기로 구분하여 리스트로 반환
+            return response.text.split(' ')
         else:
-            return "Unknown"  # 서버로부터 응답이 없을 경우
+            return ["Unknown"]  # 서버로부터 응답이 없을 경우 기본값 반환
 
-    def open_manual_nutrition_input_dialog(self):
-        # 사용자에게 음식 이름을 입력받기
-        food_name, ok = QInputDialog.getText(self, "음식 이름 입력", "음식 이름:")
-        if not ok or not food_name:  # 사용자가 취소하거나 빈 문자열을 입력한 경우
-            return
+    def submit_image(self):
+        meal_time = self.meal_time_combo.currentText()
+        current_date = datetime.now().strftime("%Y-%m-%d")
+        food_names = self.get_food_name_from_server()
 
-            # OpenAPI를 통해 영양소 정보를 조회
-        parser = Parser()
-        api_result = parser.get_info_openapi(food_name)
+        for food_name in food_names:
+            if not food_name.strip():
+                continue  # 빈 이름 무시
 
-        # OpenAPI에서 영양소 정보를 찾은 경우
-        if not api_result["error"]:
-            self.save_nutrition_info(food_name, api_result["nutritional_info"])
-        else:
-            # OpenAPI에서 정보를 찾지 못한 경우 수동 입력
-            dialog = ManualNutritionInputDialog(food_name)
-            if dialog.exec_():
-                nutrition_info = dialog.get_nutrition_info()
-                self.save_nutrition_info(food_name, {
-                    '칼로리': float(nutrition_info['calories']),
-                    '탄수화물': float(nutrition_info['carbs']),
-                    '지방': float(nutrition_info['fat']),
-                    '단백질': float(nutrition_info['protein']),
-                    '당류': float(nutrition_info['sugar']),
-                    '나트륨': float(nutrition_info['sodium'])
-                })
+            nutritional_info = self.query_nutritional_info(food_name)
+            if nutritional_info.get('error'):
+                # 영양소 정보를 찾지 못했을 경우 직접 입력 다이얼로그 열기
+                if not self.open_manual_nutrition_input_dialog(food_name):
+                    continue  # 사용자가 입력을 취소함
+            else:
+                # OpenAPI에서 정보를 찾은 경우
+                self.save_nutrition_info(food_name, nutritional_info["nutritional_info"])
+
+        QMessageBox.information(self, '음식 정보 추가', f'{meal_time} 식단에 입력된 음식들이 추가되었습니다.')
+        self.accept()
+
+    def open_manual_nutrition_input_dialog(self, food_name):
+        dialog = ManualNutritionInputDialog(food_name)
+        if dialog.exec_():
+            nutrition_info = dialog.get_nutrition_info()
+            self.save_nutrition_info(food_name, {
+                '칼로리': float(nutrition_info['calories']),
+                '탄수화물': float(nutrition_info['carbs']),
+                '지방': float(nutrition_info['fat']),
+                '단백질': float(nutrition_info['protein']),
+                '당류': float(nutrition_info['sugar']),
+                '나트륨': float(nutrition_info['sodium'])
+            })
+            return True
+        return False
 
     def save_nutrition_info(self, food_name, nutrition_info):
         meal_time = self.meal_time_combo.currentText()
@@ -122,3 +132,8 @@ class FoodImageUploadDialog(QDialog):
         daily_diet[meal_time].append(food_info)
 
         QMessageBox.information(self, '영양 정보 추가', f'{meal_time} 식단에 "{food_name}"의 영양 정보가 추가되었습니다.')
+
+    def query_nutritional_info(self, food_name):
+        # Parser 클래스를 사용하여 OpenAPI로부터 영양 정보 조회
+        parser = Parser()
+        return parser.get_info_openapi(food_name)
