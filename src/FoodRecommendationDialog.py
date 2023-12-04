@@ -13,6 +13,7 @@ class FoodRecommendationDialog(QDialog):
     def initUI(self):
         self.setWindowTitle('음식 추천')  
         self.setGeometry(200, 200, 300, 200)  
+        self.center()  # 화면 중앙에 위치시키는 함수 호출
         layout = QVBoxLayout()  
 
         # 텍스트 라벨
@@ -145,3 +146,9 @@ class FoodRecommendationDialog(QDialog):
             'fats': max(recommended_intake['fats'] - current_intake['fats'], 0)
         }
         return remaining_intake
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())

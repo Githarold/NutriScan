@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QComboBox, QPushButton, QMessageBox
+from PyQt5.QtWidgets import *
 from datetime import datetime
 import pandas as pd
 from ManualNutritionInputDialog import ManualNutritionInputDialog
@@ -26,6 +26,7 @@ class FoodTextUploadDialog(QDialog):
     def initUI(self):
         self.setWindowTitle('음식 텍스트 업로드')  
         self.setGeometry(100, 100, 300, 200)  
+        self.center()  # 화면 중앙에 위치시키는 함수 호출
         layout = QVBoxLayout()  
 
         self.food_label = QLabel('음식 이름:', self)
@@ -89,3 +90,9 @@ class FoodTextUploadDialog(QDialog):
 
     def query_nutritional_info(self, food_name):
             return self.info_getter.get_info_openapi(food_name)
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())

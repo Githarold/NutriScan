@@ -10,6 +10,7 @@ class BMRInfoDialog(QDialog):
     def initUI(self):
         self.setWindowTitle('기초대사량 정보')  
         self.setGeometry(100, 100, 300, 200)  
+        self.center()  # 화면 중앙에 위치시키는 함수 호출
         layout = QVBoxLayout()  
 
         # BMR 정보 표시 레이블
@@ -57,3 +58,9 @@ class BMRInfoDialog(QDialog):
         protein_cal = bmr * 0.3  # 단백질 30%
         fats_cal = bmr * 0.2  # 지방 20%
         return carbs_cal, protein_cal, fats_cal
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())

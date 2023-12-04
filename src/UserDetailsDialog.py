@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QComboBox, QPushButton, QMessageBox
+from PyQt5.QtWidgets import *
 
 class UserDetailsDialog(QDialog):
     def __init__(self):
@@ -8,7 +8,7 @@ class UserDetailsDialog(QDialog):
     def initUI(self):
         self.setWindowTitle('사용자 상세 정보')
         self.setGeometry(100, 100, 300, 200)
-
+        self.center()  # 화면 중앙에 위치시키는 함수 호출
         layout = QVBoxLayout()
 
         self.name_label = QLabel('이름:', self)
@@ -79,3 +79,9 @@ class UserDetailsDialog(QDialog):
 
     def get_user_info(self):
         return self.user_info
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())

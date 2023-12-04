@@ -17,6 +17,7 @@ class FoodImageUploadDialog(QDialog):
     def initUI(self):
         self.setWindowTitle('음식 사진 업로드')  
         self.setGeometry(100, 100, 300, 250)
+        self.center()  # 화면 중앙에 위치시키는 함수 호출
         layout = QVBoxLayout()
 
         self.url_button = QPushButton('이미지 업로드 사이트', self)
@@ -137,3 +138,9 @@ class FoodImageUploadDialog(QDialog):
         # Parser 클래스를 사용하여 OpenAPI로부터 영양 정보 조회
         parser = Parser()
         return parser.get_info_openapi(food_name)
+    
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())

@@ -10,6 +10,7 @@ class ExcelExporter(QDialog):
     def initUI(self):
         self.setWindowTitle('엑셀로 내보내기')  
         self.setGeometry(100, 100, 300, 100)
+        self.center()  # 화면 중앙에 위치시키는 함수 호출
         layout = QVBoxLayout()  
 
         export_button = QPushButton('내보내기', self)
@@ -68,3 +69,9 @@ class ExcelExporter(QDialog):
         df.to_excel(filename, index=False)
         QMessageBox.information(self, '내보내기 완료', f'사용자 정보가 "{filename}" 파일로 저장되었습니다.')
         print(self.user_credentials)
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())

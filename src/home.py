@@ -24,7 +24,8 @@ class Home(QDialog):
     def initUI(self):
         user_name = self.user_credentials.get(self.user_id, {}).get('details', {}).get('name', 'Unknown User')
         self.setWindowTitle(f'{user_name}의 Home')  
-        self.setGeometry(100, 100, 400, 300)  
+        self.setGeometry(100, 100, 400, 300) 
+        self.center()  # 화면 중앙에 위치시키는 함수 호출 
         layout = QVBoxLayout()
 
         # '음식 텍스트 업로드' 버튼
@@ -111,3 +112,9 @@ class Home(QDialog):
         # 데이터베이스 연결 종료
         db.close()
         QMessageBox.information(self, '정보 내보내기', '사용자 정보가 데이터베이스에 저장되었습니다.')
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())

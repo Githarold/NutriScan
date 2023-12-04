@@ -12,6 +12,7 @@ class DietInfoDialog(QDialog):
     def initUI(self):
         self.setWindowTitle('식단 정보 확인')
         self.setGeometry(100, 100, 300, 300)
+        self.center()  # 화면 중앙에 위치시키는 함수 호출
         layout = QVBoxLayout()
 
         # 날짜 선택 콤보 박스
@@ -66,3 +67,9 @@ class DietInfoDialog(QDialog):
         if edit_dialog.exec_():
             self.diet_data = edit_dialog.get_diet_data()  # 변경 사항을 받아옴
             self.display_diet_info(self.date_combo.currentIndex())  # 식단 정보 업데이트
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())

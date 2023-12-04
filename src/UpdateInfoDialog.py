@@ -10,7 +10,7 @@ class UpdateInfoDialog(QDialog):
     def initUI(self):
         self.setWindowTitle('체중 및 키 정보 업데이트')  
         self.setGeometry(100, 100, 300, 200)  
-
+        self.center()  # 화면 중앙에 위치시키는 함수 호출
         layout = QVBoxLayout()  
 
         # 체중 입력 필드
@@ -64,3 +64,9 @@ class UpdateInfoDialog(QDialog):
                             f'새 키: {height} cm'
             QMessageBox.information(self, '업데이트 성공', update_message)
             self.accept()
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())

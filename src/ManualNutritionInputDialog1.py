@@ -10,6 +10,7 @@ class ManualNutritionInputDialog(QDialog):
     def initUI(self):
         self.setWindowTitle('영양 정보 입력')  
         self.setGeometry(100, 100, 300, 200)  
+        self.center()  # 화면 중앙에 위치시키는 함수 호출
         layout = QVBoxLayout()  
 
         message_label = QLabel(f'"{self.food_name}"을(를) 찾지 못했습니다.\n"{self.food_name}"의 영양소 정보를 입력해주세요.')
@@ -70,3 +71,9 @@ class ManualNutritionInputDialog(QDialog):
             'sugar': self.sugar_input.text(),  # 당류
             'sodium': self.sodium_input.text()  # 나트륨
         }
+    
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())

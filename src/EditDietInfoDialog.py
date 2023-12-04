@@ -10,6 +10,7 @@ class EditDietInfoDialog(QDialog):
     def initUI(self):
         self.setWindowTitle('식단 정보 수정')
         self.setGeometry(150, 150, 350, 350)
+        self.center()  # 화면 중앙에 위치시키는 함수 호출
         layout = QVBoxLayout()
 
         self.date_combo = QComboBox(self)
@@ -48,13 +49,17 @@ class EditDietInfoDialog(QDialog):
     def delete_food(self):
         selected_food_name = self.food_combo.currentText()
         if selected_food_name:
-            selected_date = self.date_combo.currentText()
-            for meal_time in self.diet_data[selected_date]:
-                self.diet_data[selected_date][meal_time] = [meal for meal in self.diet_data[selected_date][meal_time] if meal.get('name') != selected_food_name]
-            self.update_food_list()
-
+            reply = QMessageBox.question(self, '음식 삭제 확인', f"'{selected_food_name}' 음식을 삭제하시겠습니까?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                selected_date = self.date_combo.currentText()
+                for meal_time in self.diet_data[selected_date]:
+                    self.diet_data[selected_date][meal_time] = [meal for meal in self.diet_data[selected_date][meal_time] if meal.get('name') != selected_food_name]
+                self.update_food_list()
+    
     def save_changes(self):
-        self.accept()
+        reply = QMessageBox.question(self, '변경 사항 저장 확인', '변경 사항을 저장하시겠습니까?', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.accept()
 
     def get_diet_data(self):
         return self.diet_data
@@ -72,8 +77,17 @@ class EditDietInfoDialog(QDialog):
         dialog = FoodDetailEditDialog(food)
         if dialog.exec_():
             updated_food = dialog.get_updated_food()
-            for i, meal in enumerate(self.diet_data[selected_date][meal_time]):
-                if meal.get('name') == food['name']:
-                    self.diet_data[selected_date][meal_time][i] = updated_food
-                    break
-            self.update_food_list()
+            reply = QMessageBox.question(self, '음식 수정 확인', '수정 사항을 저장하시겠습니까?', QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            if reply == QMessageBox.Yes:
+                for i, meal in enumerate(self.diet_data[selected_date][meal_time]):
+                    if meal.get('name') == food['name']:
+                        self.diet_data[selected_date][meal_time][i] = updated_food
+                        break
+                self.update_food_list()
+
+    
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())

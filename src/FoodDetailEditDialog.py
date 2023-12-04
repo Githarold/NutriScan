@@ -9,6 +9,7 @@ class FoodDetailEditDialog (QDialog):
     def initUI(self):
         self.setWindowTitle('음식 세부 정보 편집')
         self.setGeometry(100, 100, 300, 200)
+        self.center()  # 화면 중앙에 위치시키는 함수 호출
         layout = QFormLayout()
 
         self.name_edit = QLineEdit(self.food.get('name', ''))
@@ -48,3 +49,9 @@ class FoodDetailEditDialog (QDialog):
     def get_updated_food(self):
         # 편집된 음식 정보를 반환하는 메서드
         return self.food  # 여기서 self.food는 편집된 음식 정보를 담고 있어야 합니다.
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
