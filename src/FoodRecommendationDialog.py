@@ -94,7 +94,7 @@ class FoodRecommendationDialog(QDialog):
         user_name = self.get_user_name()
 
         # GetInfo 클래스 인스턴스 생성 및 추천 받기
-        info_getter = Recommender()
+        info_getter = Recommender(self.user_credentials, self.user_id)
         recommended_food = info_getter.get_info_gpt(remaining_nutrients)
 
         # 추천 음식 다이얼로그에 표시
