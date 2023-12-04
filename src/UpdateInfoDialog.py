@@ -16,12 +16,18 @@ class UpdateInfoDialog(QDialog):
         # 체중 입력 필드
         self.weight_label = QLabel('체중(kg):', self)
         self.weight_input = QLineEdit(self)
+        # 기존 체중 정보 설정
+        current_weight = self.user_credentials[self.user_id]['details'].get('weight', '')
+        self.weight_input.setText(str(current_weight))
         layout.addWidget(self.weight_label)
         layout.addWidget(self.weight_input)
 
         # 키 입력 필드
         self.height_label = QLabel('키(cm):', self)
         self.height_input = QLineEdit(self)
+        # 기존 키 정보 설정
+        current_height = self.user_credentials[self.user_id]['details'].get('height', '')
+        self.height_input.setText(str(current_height))
         layout.addWidget(self.height_label)
         layout.addWidget(self.height_input)
 
@@ -31,6 +37,7 @@ class UpdateInfoDialog(QDialog):
         layout.addWidget(self.update_button)
 
         self.setLayout(layout)
+
     def update_info(self):
             weight = self.weight_input.text()
             height = self.height_input.text()
