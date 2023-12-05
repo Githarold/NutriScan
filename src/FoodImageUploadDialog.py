@@ -89,7 +89,10 @@ class FoodImageUploadDialog(QDialog):
         meal_time = self.meal_time_combo.currentText()
         current_date = datetime.now().strftime("%Y-%m-%d")
         food_names = self.get_food_name_from_server()
-
+        if not food_names or all(not name.strip() for name in food_names):
+            QMessageBox.warning(self, '오류', '음식이 인식되지 않았습니다.')
+            return
+            
         for food_name in food_names:
             if not food_name.strip():
                 continue  # 빈 이름 무시
