@@ -43,8 +43,8 @@ class Home(QDialog):
         self.diet_info_button.clicked.connect(self.show_diet_info)
         layout.addWidget(self.diet_info_button)
 
-        # 체중 및 키 정보 업데이트 버튼
-        self.update_info_button = QPushButton('체중 및 키 정보 업데이트', self)
+        # 체중, 키 및 나이 정보 업데이트 버튼
+        self.update_info_button = QPushButton('체중, 키 및 나이 정보 업데이트', self)
         self.update_info_button.clicked.connect(self.update_info)
         layout.addWidget(self.update_info_button)
 

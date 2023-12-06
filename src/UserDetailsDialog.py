@@ -49,27 +49,37 @@ class UserDetailsDialog(QDialog):
         self.setLayout(layout)
 
     def submit_info(self):
-        # 숫자로 변환 가능한지 확인하는 함수
-        def is_number(s):
+        errors = []  # 오류 메시지를 저장하는 리스트
+
+        # 나이가 정수이고 0 이상인지 확인
+        if not self.age_input.text().isdigit() or int(self.age_input.text()) <= 0:
+            errors.append("나이는 자연수로 입력해야 합니다.")
+
+        # 체중과 키가 숫자이고 0 이상인지 확인
+        for label, edit in [("체중(kg)", self.weight_input), ("키(cm)", self.height_input)]:
             try:
-                float(s)
-                return True
+                value = float(edit.text())
+                if value <= 0:
+                    errors.append(f"{label}는 양수로 입력해야 합니다.")
             except ValueError:
-                return False
+                errors.append(f"{label}는 숫자로 입력해야 합니다.")
 
-        # 입력된 나이, 체중, 키가 숫자인지 확인
-        if not (is_number(self.age_input.text()) and 
-                is_number(self.weight_input.text()) and 
-                is_number(self.height_input.text())):
-            QMessageBox.warning(self, "입력 오류", "나이, 체중, 키는 숫자로 입력해야 합니다.")
+        if errors:
+            # 오류 메시지가 있는 경우, 모든 오류 메시지를 표시합니다.
+            QMessageBox.warning(self, "입력 오류", "\n".join(errors))
             return
 
-        # 나이가 정수이고 0 이상인지, 몸무게와 키가 0 이상인지 확인
-        if not (self.age_input.text().isdigit() and int(self.age_input.text()) > 0 and
-                float(self.weight_input.text()) > 0 and 
-                float(self.height_input.text()) > 0):
-            QMessageBox.warning(self, "입력 오류", "나이는 자연수, 체중과 키는 양수로 입력해야 합니다.")
-            return
+        # 모든 입력이 유효한 경우, 사용자 정보 저장
+        self.user_info = {
+            'name': self.name_input.text(),
+            'gender': self.gender_input.currentText(),
+            'age': int(self.age_input.text()),
+            'weight': float(self.weight_input.text()),
+            'height': float(self.height_input.text()),
+            'allergies': self.allergy_input.text()
+        }
+        QMessageBox.information(self, '회원가입', '회원가입이 완료되었습니다.')
+        self.accept()
 
         # 모든 입력이 유효한 경우, 사용자 정보 저장
         self.user_info = {

@@ -8,10 +8,19 @@ class UpdateInfoDialog(QDialog):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle('체중 및 키 정보 업데이트')  
-        self.setGeometry(100, 100, 300, 200)  
+        self.setWindowTitle('체중, 키 및 나이 정보 업데이트')  
+        self.setGeometry(100, 100, 300, 250)  # 창 크기를 조정합니다.
         self.center()  # 화면 중앙에 위치시키는 함수 호출
         layout = QVBoxLayout()  
+
+        # 나이 입력 필드
+        self.age_label = QLabel('나이:', self)
+        self.age_input = QLineEdit(self)
+        # 기존 나이 정보 설정
+        current_age = self.user_credentials[self.user_id]['details'].get('age', '')
+        self.age_input.setText(str(current_age))
+        layout.addWidget(self.age_label)
+        layout.addWidget(self.age_input)
 
         # 체중 입력 필드
         self.weight_label = QLabel('체중(kg):', self)
@@ -39,31 +48,50 @@ class UpdateInfoDialog(QDialog):
         self.setLayout(layout)
 
     def update_info(self):
-            weight = self.weight_input.text()
-            height = self.height_input.text()
+        errors = []  # 오류 메시지를 저장할 리스트
 
-            # 체중과 키가 숫자로 변환 가능한지 확인
-            try:
-                weight = float(weight)
-                height = float(height)
-            except ValueError:
-                QMessageBox.warning(self, '입력 오류', '체중과 키는 숫자로 입력해야 합니다.')
-                return
+        # 나이가 자연수인지 확인
+        age = self.age_input.text()
+        if not age.isdigit() or int(age) <= 0:
+            errors.append("나이는 자연수로 입력해야 합니다.")
 
-            # 사용자 정보 업데이트
-            old_weight = self.user_credentials[self.user_id]['details'].get('weight', '없음')
-            old_height = self.user_credentials[self.user_id]['details'].get('height', '없음')
+        # 체중과 키가 양수인지 확인
+        try:
+            weight = float(self.weight_input.text())
+            if weight <= 0:
+                errors.append("체중은 양수로 입력해야 합니다.")
+        except ValueError:
+            errors.append("체중은 숫자로 입력해야 합니다.")
 
-            self.user_credentials[self.user_id]['details']['weight'] = weight
-            self.user_credentials[self.user_id]['details']['height'] = height
+        try:
+            height = float(self.height_input.text())
+            if height <= 0:
+                errors.append("키는 양수로 입력해야 합니다.")
+        except ValueError:
+            errors.append("키는 숫자로 입력해야 합니다.")
 
-            update_message = f'체중 및 키 정보가 업데이트되었습니다.\n\n' \
-                            f'이전 체중: {old_weight} kg\n' \
-                            f'새 체중: {weight} kg\n\n' \
-                            f'이전 키: {old_height} cm\n' \
-                            f'새 키: {height} cm'
-            QMessageBox.information(self, '업데이트 성공', update_message)
-            self.accept()
+        if errors:
+            QMessageBox.warning(self, '입력 오류', "\n".join(errors))
+            return
+
+        # 사용자 정보 업데이트
+        old_age = self.user_credentials[self.user_id]['details'].get('age', '없음')
+        old_weight = self.user_credentials[self.user_id]['details'].get('weight', '없음')
+        old_height = self.user_credentials[self.user_id]['details'].get('height', '없음')
+
+        self.user_credentials[self.user_id]['details']['age'] = int(age)
+        self.user_credentials[self.user_id]['details']['weight'] = weight
+        self.user_credentials[self.user_id]['details']['height'] = height
+
+        update_message = f'나이, 체중 및 키 정보가 업데이트되었습니다.\n\n' \
+                        f'이전 나이: {old_age} 세\n' \
+                        f'새 나이: {age} 세\n\n' \
+                        f'이전 체중: {old_weight} kg\n' \
+                        f'새 체중: {weight} kg\n\n' \
+                        f'이전 키: {old_height} cm\n' \
+                        f'새 키: {height} cm'
+        QMessageBox.information(self, '업데이트 성공', update_message)
+        self.accept()
 
     def center(self):
         qr = self.frameGeometry()
