@@ -64,15 +64,21 @@ class UserDetailsDialog(QDialog):
             QMessageBox.warning(self, "입력 오류", "나이, 체중, 키는 숫자로 입력해야 합니다.")
             return
 
+        # 나이가 정수이고 0 이상인지, 몸무게와 키가 0 이상인지 확인
+        if not (self.age_input.text().isdigit() and int(self.age_input.text()) > 0 and
+                float(self.weight_input.text()) > 0 and 
+                float(self.height_input.text()) > 0):
+            QMessageBox.warning(self, "입력 오류", "나이는 자연수, 체중과 키는 양수로 입력해야 합니다.")
+            return
+
         # 모든 입력이 유효한 경우, 사용자 정보 저장
         self.user_info = {
             'name': self.name_input.text(),
             'gender': self.gender_input.currentText(),
-            'age': self.age_input.text(),
-            'weight': self.weight_input.text(),
-            'height': self.height_input.text(),
+            'age': int(self.age_input.text()),
+            'weight': float(self.weight_input.text()),
+            'height': float(self.height_input.text()),
             'allergies': self.allergy_input.text()
-            
         }
         QMessageBox.information(self, '회원가입', '회원가입이 완료되었습니다.')
         self.accept()
