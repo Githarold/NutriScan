@@ -50,12 +50,13 @@ class DietInfoDialog(QDialog):
                     # 사전 형태인 경우 (영양 정보 포함)
                     food_name = food.get('name', 'N/A')
                     nutrition = food.get('nutrition', {})
-                    diet_info += (f"  - {food_name} (칼로리: {nutrition.get('칼로리', 'N/A')}, "
-                                  f"탄수화물: {nutrition.get('탄수화물', 'N/A')}, "
-                                  f"지방: {nutrition.get('지방', 'N/A')}, "
-                                  f"단백질: {nutrition.get('단백질', 'N/A')}, "
-                                  f"당류: {nutrition.get('당류', 'N/A')}, "  # 당류 정보 추가
-                                  f"나트륨: {nutrition.get('나트륨', 'N/A')}")  # 나트륨 정보 추가
+                    # 단위 'kcal' 및 'g' 추가
+                    diet_info += (f"  - {food_name} (칼로리: {nutrition.get('칼로리', 'N/A')} kcal, "
+                                  f"탄수화물: {nutrition.get('탄수화물', 'N/A')} g, "
+                                  f"지방: {nutrition.get('지방', 'N/A')} g, "
+                                  f"단백질: {nutrition.get('단백질', 'N/A')} g, "
+                                  f"당류: {nutrition.get('당류', 'N/A')} g, "
+                                  f"나트륨: {nutrition.get('나트륨', 'N/A')} mg")
                     diet_info += "\n"
                 else:
                     # 문자열 형태인 경우 (영양 정보 없음)

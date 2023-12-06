@@ -39,7 +39,7 @@ class ManualNutritionInputDialog(QDialog):
 
         # 나트륨 입력 필드 추가
         self.sodium_input = QLineEdit(self)
-        layout.addWidget(QLabel('나트륨(g):'))
+        layout.addWidget(QLabel('나트륨(mg):'))
         layout.addWidget(self.sodium_input)
 
         submit_button = QPushButton('제출', self)
@@ -56,7 +56,7 @@ class ManualNutritionInputDialog(QDialog):
             '지방(g)': self.fat_input,
             '단백질(g)': self.protein_input,
             '당류(g)': self.sugar_input,
-            '나트륨(g)': self.sodium_input
+            '나트륨(mg)': self.sodium_input
         }
 
         for key, edit in nutrition_fields.items():

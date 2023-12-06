@@ -37,7 +37,7 @@ class FoodDetailEditDialog (QDialog):
                 nutrition_value = float(value)
                 # 입력된 값이 0 이하인 경우 경고 메시지를 표시합니다.
                 if nutrition_value < 0:
-                    QMessageBox.warning(self, '입력 오류', f'{key}는 0보다 커야 합니다.')
+                    QMessageBox.warning(self, '입력 오류', f'{key}는 0이상의 숫자여야 합니다.')
                     return
             except ValueError:
                 # 변환에 실패할 경우 경고 메시지를 표시합니다.
