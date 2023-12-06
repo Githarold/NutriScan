@@ -48,19 +48,35 @@ class ManualNutritionInputDialog(QDialog):
 
         self.setLayout(layout)
 
-    def is_number(self, string):
-        try:
-            float(string)
-            return True
-        except ValueError:
-            return False
-
     def accept(self):
-        # 입력된 모든 값이 숫자인지 확인
-        if not all(self.is_number(value.text()) for value in [self.calories_input, self.carbs_input, self.fat_input, self.protein_input, self.sugar_input, self.sodium_input]):
-            QMessageBox.warning(self, '입력 오류', '영양소 정보는 숫자로 입력해야 합니다.')
+        errors = []  # 오류 메시지를 저장하는 리스트
+        nutrition_fields = {
+            '칼로리(kcal)': self.calories_input,
+            '탄수화물(g)': self.carbs_input,
+            '지방(g)': self.fat_input,
+            '단백질(g)': self.protein_input,
+            '당류(g)': self.sugar_input,
+            '나트륨(g)': self.sodium_input
+        }
+
+        for key, edit in nutrition_fields.items():
+            value = edit.text()
+            try:
+                # 입력값을 float로 변환을 시도합니다.
+                nutrition_value = float(value)
+                # 입력된 값이 0 미만인 경우 오류 리스트에 메시지를 추가합니다.
+                if nutrition_value < 0:
+                    errors.append(f'{key}는 0 이상이어야 합니다.')
+            except ValueError:
+                # 변환에 실패할 경우 오류 리스트에 메시지를 추가합니다.
+                errors.append(f'{key}는 숫자로 입력해야 합니다.')
+
+        if errors:
+            # 오류 메시지가 있는 경우, 모든 오류 메시지를 표시합니다.
+            QMessageBox.warning(self, '입력 오류', "\n".join(errors))
             return
-        super().accept()
+        else:
+            super().accept()
 
     def get_nutrition_info(self):
         return {
