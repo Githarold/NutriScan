@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import *
 import pandas as pd
 
+
 class ExcelExporter(QDialog):
     def __init__(self, user_credentials):
         super().__init__()

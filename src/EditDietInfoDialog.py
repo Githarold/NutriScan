@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import *
 from FoodDetailEditDialog import FoodDetailEditDialog
 
+
 class EditDietInfoDialog(QDialog):
     def __init__(self, diet_data):
         super().__init__()
