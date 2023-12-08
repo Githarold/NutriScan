@@ -5,15 +5,17 @@ import pandas as pd
 class ExcelExporter(QDialog):
     def __init__(self, user_credentials):
         super().__init__()
-        self.user_credentials = user_credentials
+        self.user_credentials = user_credentials    # Store the user credentials
         self.initUI()
 
     def initUI(self):
+        # Set window title and size
         self.setWindowTitle('엑셀로 내보내기')  
         self.setGeometry(100, 100, 300, 100)
-        self.center()  # 화면 중앙에 위치시키는 함수 호출
-        layout = QVBoxLayout()  
+        self.center()  # Function call to center the window on the screen
+        layout = QVBoxLayout()
 
+        # Button for exporting data to Excel
         export_button = QPushButton('내보내기', self)
         export_button.clicked.connect(self.export_to_excel)
         layout.addWidget(export_button)
@@ -21,13 +23,13 @@ class ExcelExporter(QDialog):
         self.setLayout(layout)
 
     def export_to_excel(self):
-        # 사용자 정보와 식단 정보를 포함한 DataFrame 생성
+        # Create DataFrame with user information and diet information
         data = []
         for user_id, info in self.user_credentials.items():
             user_data = info.get('details', {}).copy()
             user_data['id'] = user_id
 
-            # 식단 정보 처리
+           # Process diet information
             diet_info = info.get('diet', {})
             if diet_info:
                 for date, meals in diet_info.items():
@@ -48,7 +50,7 @@ class ExcelExporter(QDialog):
                             })
                             data.append(meal_data)
             else:
-                # 식단 정보가 없는 경우, 기본 사용자 정보만 추가
+                # If there is no diet information, add only the basic user information
                 user_data.update({
                     'date': '',
                     'meal_time': '',
@@ -65,13 +67,14 @@ class ExcelExporter(QDialog):
 
         df = pd.DataFrame(data)
 
-        # 엑셀 파일로 저장
+        # Save the DataFrame as an Excel file
         filename = 'user_credentials.xlsx'
         df.to_excel(filename, index=False)
         QMessageBox.information(self, '내보내기 완료', f'사용자 정보가 "{filename}" 파일로 저장되었습니다.')
         print(self.user_credentials)
 
     def center(self):
+        # Center the window on the screen
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
