@@ -1,5 +1,4 @@
 import pymysql
-import json
 
 
 class Database:
@@ -54,26 +53,10 @@ class Database:
             print(f"An error occurred: {e}")
             self.connection.rollback()
 
-    def delete_data(self, query, id):
-        # Deletes data from the database based on the given query and ID.
-        try:
-            self.cursor.execute(query, (id,))
-            self.connection.commit()
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            self.connection.rollback()
-
     def close(self):
         # Closes the database connection.
         self.cursor.close()
         self.connection.close()
-
-    def fetch_all_users(self):
-        # Fetches all user records from the database.
-        query = "SELECT * FROM users"
-        users = self.fetch_data(query)
-        users_dict = {user["user_id"]: user for user in users}
-        return users_dict
 
     def check_user_exists(self, user_id):
         # Checks if a user exists in the database based on the user ID.
@@ -81,18 +64,6 @@ class Database:
         self.cursor.execute(query, (user_id,))
         result = self.cursor.fetchone()
         return result
-
-    def add_new_user(self, user_id, password):
-        # Adds a new user to the database with the provided user ID and password.
-        query = "INSERT INTO users (user_id, password) VALUES (%s, %s)"
-        try:
-            self.cursor.execute(query, (user_id, password))
-            self.connection.commit()
-            return True
-        except pymysql.MySQLError as e:
-            print(f"An error occurred: {e}")
-            self.connection.rollback()
-            return False
 
     def fetch_user_data(self, user_id):
         # Fetches specific data for a user based on the user ID.
@@ -224,18 +195,3 @@ class Database:
                             nutrition["나트륨"],
                         )
                         self.insert_data(insert_query, diet_data)
-
-    def delete_user_data(self, user_id):
-        # Deletes all data associated with a specific user ID.
-        delete_diet_query = "DELETE FROM diet WHERE user_id = %s"
-        delete_user_query = "DELETE FROM users WHERE user_id = %s"
-
-        try:
-            self.cursor.execute(delete_diet_query, (user_id,))
-            self.cursor.execute(delete_user_query, (user_id,))
-            self.connection.commit()
-            return True
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            self.connection.rollback()
-            return False

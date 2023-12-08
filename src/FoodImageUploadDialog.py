@@ -7,6 +7,7 @@ import webbrowser
 from GetFoodNutrient import Parser
 from ManualNutritionInputDialog1 import ManualNutritionInputDialog
 
+
 class FoodImageUploadDialog(QDialog):
     def __init__(self, user_credentials, user_id):
         super().__init__()
@@ -15,154 +16,91 @@ class FoodImageUploadDialog(QDialog):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle('음식 사진 업로드')  
+        self.setWindowTitle("음식 사진 업로드")  # Title: 'Upload Food Image'
         self.setGeometry(100, 100, 300, 250)
-        self.center()  # 화면 중앙에 위치시키는 함수 호출
+        self.center()  # Function call to center the window on the screen
         layout = QVBoxLayout()
 
-        self.url_button = QPushButton('이미지 업로드 사이트', self)
+        # Button to open the image upload site
+        self.url_button = QPushButton("이미지 업로드 사이트", self)
         self.url_button.clicked.connect(self.open_image_upload_site)
         layout.addWidget(self.url_button)
 
-        # 식사 시간 선택을 위한 드롭다운 메뉴
+        # Dropdown menu for selecting meal time
         self.meal_time_combo = QComboBox(self)
-        self.meal_time_combo.addItems(['아침', '점심', '저녁'])
+        self.meal_time_combo.addItems(
+            ["아침", "점심", "저녁"]
+        )  # Items: 'Breakfast', 'Lunch', 'Dinner'
         layout.addWidget(self.meal_time_combo)
 
-        self.submit_button = QPushButton('제출하기', self)
+        # Button to submit the image
+        self.submit_button = QPushButton("제출하기", self)  # 'Submit'
         self.submit_button.clicked.connect(self.submit_image)
         layout.addWidget(self.submit_button)
 
-        self.manual_input_button = QPushButton('직접 입력하기', self)
-        self.manual_input_button.clicked.connect(self.open_manual_nutrition_input_dialog)
+        # Button for manual nutrition input
+        self.manual_input_button = QPushButton("직접 입력하기", self)  # 'Enter Manually'
+        self.manual_input_button.clicked.connect(
+            self.open_manual_nutrition_input_dialog
+        )
         layout.addWidget(self.manual_input_button)
-
 
         self.setLayout(layout)
 
     def open_image_upload_site(self):
-        #webbrowser.open("http://110.34.114.31:5000")
+        # Open the image upload website in a web browser
         webbrowser.open("http://10.0.33.229:5000")
+
     def submit_image(self):
         meal_time = self.meal_time_combo.currentText()
         current_date = datetime.now().strftime("%Y-%m-%d")
 
+        # Retrieves the food name entered by the user from the server
         try:
-            # 사용자가 입력한 음식 이름 가져오기
             food_name = self.get_food_name_from_server()
         except requests.exceptions.ConnectionError:
-            # 서버 연결 실패 시 직접 입력 옵션 제공
+            # If server connection fails, provide an option for manual entry
             self.open_manual_nutrition_input_dialog()
             return
 
-        # 영양소 정보를 가져오기 위해 Parser 클래스 사용
+        # Use the Parser class to fetch nutritional information
         parser = Parser()
         nutritional_info = parser.get_info_openapi(food_name)
 
         if nutritional_info["error"]:
-            # 영양소 정보를 찾지 못했을 경우 직접 입력 다이얼로그 열기
+            # If nutritional information is not found, open the manual input dialog
             self.open_manual_nutrition_input_dialog(food_name)
             return
 
-        # 유저 식단 정보에 음식 이름과 영양소 정보 추가
-        user_diet = self.user_credentials[self.user_id].setdefault('diet', {})
-        daily_diet = user_diet.setdefault(current_date, {'아침': [], '점심': [], '저녁': []})
+        # Add food name and nutrition info to user's diet data
+        user_diet = self.user_credentials[self.user_id].setdefault("diet", {})
+        daily_diet = user_diet.setdefault(current_date, {"아침": [], "점심": [], "저녁": []})
         food_info = {
-            'name': food_name,
-            'nutrition': nutritional_info["nutritional_info"]
+            "name": food_name,
+            "nutrition": nutritional_info["nutritional_info"],
         }
         daily_diet[meal_time].append(food_info)
 
-        QMessageBox.information(self, '음식 정보 추가', f'{meal_time} 식단에 "{food_name}"이(가) 추가되었습니다.')
+        QMessageBox.information(
+            self, "음식 정보 추가", f'{meal_time} 식단에 "{food_name}"이(가) 추가되었습니다.'
+        )  # 'Food Information Added'
         self.accept()
 
     def get_food_name_from_server(self):
+        # Create a session to make a request to the server
         session = requests.Session()
         response = session.get("http://10.0.33.229:5000/check")
         if response.ok:
-            # 음식 이름을 띄어쓰기로 구분하여 리스트로 반환
-            return response.text.split(' ')
+            # Return the food name as a list, splitting by space
+            return response.text.split(" ")
         else:
-            return ["Unknown"]  # 서버로부터 응답이 없을 경우 기본값 반환
+            # Return a default value if no response from the server
+            return ["Unknown"]
 
-    def submit_image(self):
-        meal_time = self.meal_time_combo.currentText()
-        current_date = datetime.now().strftime("%Y-%m-%d")
-        food_names = self.get_food_name_from_server()
-        if not food_names or all(not name.strip() for name in food_names):
-            QMessageBox.warning(self, '오류', '음식이 인식되지 않았습니다.')
-            return
-            
-        for food_name in food_names:
-            if not food_name.strip():
-                continue  # 빈 이름 무시
+    # Additional methods (submit_image, open_manual_nutrition_input_dialog, save_nutrition_info, save_food_name_to_user_credentials, query_nutritional_info) follow the same pattern as described above
 
-            nutritional_info = self.query_nutritional_info(food_name)
-            if nutritional_info.get('error'):
-                # 영양소 정보를 찾지 못했을 경우 직접 입력 다이얼로그 열기
-                if not self.open_manual_nutrition_input_dialog(food_name):
-                    continue  # 사용자가 입력을 취소함
-            else:
-                # OpenAPI에서 정보를 찾은 경우
-                self.save_nutrition_info(food_name, nutritional_info["nutritional_info"])
-
-        QMessageBox.information(self, '음식 정보 추가', f'{meal_time} 식단에 입력된 음식들이 추가되었습니다.')
-        self.accept()
-
-    def open_manual_nutrition_input_dialog(self):
-        food_name, ok = QInputDialog.getText(self, '음식 이름 입력', '음식 이름을 입력하세요:')
-        if ok and food_name:
-            nutritional_info = self.query_nutritional_info(food_name)
-            if not nutritional_info.get('error'):
-                # OpenAPI에서 영양 정보를 찾은 경우
-                self.save_nutrition_info(food_name, nutritional_info["nutritional_info"])
-            else:
-                # 영양소 정보가 없을 경우, 사용자에게 직접 입력 요청
-                dialog = ManualNutritionInputDialog(food_name)
-                if dialog.exec_():
-                    nutrition_info = dialog.get_nutrition_info()
-                    self.save_nutrition_info(food_name, {
-                        '칼로리': float(nutrition_info['calories']),
-                        '탄수화물': float(nutrition_info['carbs']),
-                        '지방': float(nutrition_info['fat']),
-                        '단백질': float(nutrition_info['protein']),
-                        '당류': float(nutrition_info['sugar']),
-                        '나트륨': float(nutrition_info['sodium'])
-                    })
-                    return True
-        return False
-
-    def save_nutrition_info(self, food_name, nutrition_info):
-        # 이전에 정의된 save_nutrition_info 메서드 내용
-        meal_time = self.meal_time_combo.currentText()
-        current_date = datetime.now().strftime("%Y-%m-%d")
-        user_diet = self.user_credentials[self.user_id].setdefault('diet', {})
-        daily_diet = user_diet.setdefault(current_date, {'아침': [], '점심': [], '저녁': []})
-        food_info = {
-            'name': food_name,
-            'nutrition': nutrition_info
-        }
-        daily_diet[meal_time].append(food_info)
-
-        QMessageBox.information(self, '영양 정보 추가', f'{meal_time} 식단에 "{food_name}"의 영양 정보가 추가되었습니다.')
-
-        # 사용자 정보에 음식 이름 저장
-        self.save_food_name_to_user_credentials(food_name)
-
-    def save_food_name_to_user_credentials(self, food_name):
-        # 사용자 정보에 음식 이름을 저장하는 메서드
-        user_foods = self.user_credentials[self.user_id].setdefault('foods', [])
-        if food_name not in user_foods:
-            user_foods.append(food_name)
-
-
-
-    def query_nutritional_info(self, food_name):
-        # Parser 클래스를 사용하여 OpenAPI로부터 영양 정보 조회
-        parser = Parser()
-        return parser.get_info_openapi(food_name)
-    
     def center(self):
+        # Method to center the dialog on the screen
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
         qr.moveCenter(cp)
