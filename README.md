@@ -18,6 +18,8 @@ Before you can start using NutriScan, you'll need to install its dependencies. H
 
 ## 🚀 Getting Started
 
+To obtain the necessary token for the program, please request a token by emailing harold3312@naver.com.
+
 Ready to run NutriScan? Follow these steps:
 
 1. **Open your terminal or command prompt**:
