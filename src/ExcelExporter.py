@@ -45,8 +45,7 @@ class ExcelExporter(QDialog):
                                 'protein': meal.get('nutrition', {}).get('단백질', ''),
                                 'fat': meal.get('nutrition', {}).get('지방', ''),
                                 'sugar': meal.get('nutrition', {}).get('당류', ''),
-                                'sodium': meal.get('nutrition', {}).get('나트륨', ''),
-                                'image_url': meal.get('image_url', '')
+                                'sodium': meal.get('nutrition', {}).get('나트륨', '')
                             })
                             data.append(meal_data)
             else:
@@ -60,8 +59,7 @@ class ExcelExporter(QDialog):
                     'protein': '',
                     'fat': '',
                     'sugar': '',
-                    'sodium': '',
-                    'image_url': ''
+                    'sodium': ''
                 })
                 data.append(user_data)
 
