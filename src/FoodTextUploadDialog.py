@@ -1,11 +1,7 @@
 from PyQt5.QtWidgets import *
 from datetime import datetime
-
 from ManualNutritionInputDialog import ManualNutritionInputDialog
 from GetFoodNutrient import Parser
-
-
-
 
 
 class FoodTextUploadDialog(QDialog):
