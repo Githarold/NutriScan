@@ -41,8 +41,15 @@ class FoodImageUploadDialog(QDialog):
         self.setLayout(layout)
 
     def open_image_upload_site(self):
+<<<<<<< HEAD
         #webbrowser.open("http://110.34.114.31:5000")
         webbrowser.open("http://10.0.33.229:5000")
+=======
+        # Function to open the image upload site in a web browser
+        # webbrowser.open("http://110.34.114.31:5000")
+        webbrowser.open("http://110.34.114.31:5000")
+
+>>>>>>> 62e9a3ec2decec3a719789ba43d69f596a0f9b2f
     def submit_image(self):
         meal_time = self.meal_time_combo.currentText()
         current_date = datetime.now().strftime("%Y-%m-%d")
@@ -78,7 +85,7 @@ class FoodImageUploadDialog(QDialog):
 
     def get_food_name_from_server(self):
         session = requests.Session()
-        response = session.get("http://10.0.33.229:5000/check")
+        response = session.get("http://110.34.114.31:5000/check")
         if response.ok:
             # 음식 이름을 띄어쓰기로 구분하여 리스트로 반환
             return response.text.split(' ')
