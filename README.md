@@ -6,8 +6,9 @@ Welcome to NutriScan! This AI-powered application identifies the food in your pi
 
 Before you start using NutriScan, you need to install its dependencies. Open your terminal and navigate to the directory where you have NutriScan. Then run the following command:
 
-\```bash
+```bash
 pip install -r requirements.txt
+```
 
 This command installs all the necessary Python packages listed in `requirements.txt`.
 
@@ -21,8 +22,9 @@ To run NutriScan, follow these simple steps:
 
 3. **Execute NutriScan**: Once you're in the NutriScan directory, run the application by typing:
 
-\```bash
+```bash
 python src/main.py
+```
 
 This command starts the NutriScan application. Ensure that you have Python installed on your computer to run this script.
 
