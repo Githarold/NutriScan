@@ -42,7 +42,6 @@ class Login:
             # On successful login, fetch user details
             user_data = self.db.fetch_user_data(user_id)
             # Uncomment the below line to see user data (user data + diet data)
-            # print(user_data)
             if user_data:
                 # Save the fetched user data in user_credentials
                 self.app.user_credentials = user_data

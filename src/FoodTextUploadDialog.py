@@ -1,20 +1,7 @@
 from PyQt5.QtWidgets import *
 from datetime import datetime
-import pandas as pd
 from ManualNutritionInputDialog import ManualNutritionInputDialog
 from GetFoodNutrient import Parser
-
-
-def search_food_nutrition(file_path, food_name):
-    # Read the Excel file into a DataFrame
-    df = pd.read_excel(file_path)
-
-    # Search for the food name
-    result = df[df["음식 이름"] == food_name]
-    if not result.empty:
-        return result.iloc[0].to_dict()
-    else:
-        return None
 
 
 class FoodTextUploadDialog(QDialog):
