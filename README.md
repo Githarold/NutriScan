@@ -8,7 +8,6 @@ Before you start using NutriScan, you need to install its dependencies. Open you
 
 \```bash
 pip install -r requirements.txt
-\```
 
 This command installs all the necessary Python packages listed in `requirements.txt`.
 
@@ -24,7 +23,6 @@ To run NutriScan, follow these simple steps:
 
 \```bash
 python src/main.py
-\```
 
 This command starts the NutriScan application. Ensure that you have Python installed on your computer to run this script.
 
