@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Food Image Upload</title>
+    <title>Food Detection Results</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,45 +14,37 @@
             color: #333;
         }
 
-        form {
+        p {
             background-color: white;
             max-width: 300px;
             margin: auto;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            word-wrap: break-word;
         }
 
-        input[type=file] {
-            border: 1px solid #ddd;
-            padding: 10px;
-            width: 100%;
-            margin-bottom: 20px;
-            border-radius: 4px;
-        }
-
-        input[type=submit] {
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
             background-color: #4CAF50;
             color: white;
-            padding: 12px 20px;
-            border: none;
+            padding: 10px 20px;
+            text-decoration: none;
             border-radius: 4px;
-            cursor: pointer;
         }
 
-        input[type=submit]:hover {
+        .back-link:hover {
             background-color: #45a049;
         }
     </style>
 </head>
 <body>
 
-<h1>Image Upload</h1>
-<form action="/upload" method="post" enctype="multipart/form-data">
-    Select image to upload:
-    <input type="file" name="file" id="file"><br><br>
-    <input type="submit" value="Upload Image" name="submit">
-</form>
+    <h1>Detected Foods</h1>
+    <p>{{ food_output }}</p>
+    <p>Please return to the program window and click the submit button.</p>
+    <a href="/" class="back-link">Go Back</a>
 
 </body>
 </html>
