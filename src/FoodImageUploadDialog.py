@@ -50,7 +50,7 @@ class FoodImageUploadDialog(QDialog):
     def open_image_upload_site(self):
         # Function to open the image upload site in a web browser
         # webbrowser.open("http://110.34.114.31:5000")
-        webbrowser.open("http://10.0.33.229:5000")
+        webbrowser.open("http://110.34.114.31:5000")
 
     def submit_image(self):
         # Function to handle the submission of the image
@@ -90,7 +90,7 @@ class FoodImageUploadDialog(QDialog):
     def get_food_name_from_server(self):
         # Function to get the food name from the server
         session = requests.Session()
-        response = session.get("http://10.0.33.229:5000/check")
+        response = session.get("http://110.34.114.31:5000/check")
         if response.ok:
             return response.text.split(" ")
         else:

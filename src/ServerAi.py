@@ -51,18 +51,24 @@ class AiServer:
         )
 
     def process_image(self, file_path, user_ip):
-        # Process the uploaded image using the model to predict the food content.
-        # Store the prediction results in a user-specific dictionary.
-        results = self.model.predict(source=file_path, save=False)
-        output = ""
-        for r in results:
-            boxes = r.boxes
-            for box in boxes:
-                c = box.cls
-                food = self.korean_food_dict.get(str(self.model.names[int(c)]), "")
-                output += food + " "
+        try:
+            # Process the uploaded image using the model to predict the food content.
+            # Store the prediction results in a user-specific dictionary.
+            results = self.model.predict(source=file_path, save=True)
+            foods = set()
+            for r in results:
+                boxes = r.boxes
+                for box in boxes:
+                    c = box.cls
+                    food = self.korean_food_dict.get(str(self.model.names[int(c)]), "")
+                    if food:  # Only add if the food name is not empty
+                        foods.add(food)
+            output = " ".join(foods)
+        except Exception as e:
+            # In case of an error during prediction, return an error message
+            output = "An error occurred during prediction. Please try uploading another food image."
 
-        # Store the output in user-specific dictionary
+        # Store the output or error message in user-specific dictionary
         self.user_food_dic[user_ip] = output
 
     def setup_routes(self):
@@ -89,6 +95,11 @@ class AiServer:
 
                 # Process the image and update the user_food_dic
                 self.process_image(file_path, user_ip)
+                if (
+                    self.user_food_dic[user_ip]
+                    == "An error occurred during prediction. Please try uploading another food image."
+                ):
+                    return "An error occurred during prediction. Please try uploading another food image."
 
                 return render_template(
                     "result.html", food_output=self.user_food_dic[user_ip]
