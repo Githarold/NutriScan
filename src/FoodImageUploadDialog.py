@@ -50,87 +50,65 @@ class FoodImageUploadDialog(QDialog):
     def open_image_upload_site(self):
         # Function to open the image upload site in a web browser
         # webbrowser.open("http://110.34.114.31:5000")
-        webbrowser.open("http://110.34.114.31:5000")
+        try:
+            webbrowser.open("http://110.34.114.31:5000")
+        except Exception as e:
+            QMessageBox.critical(self, "연결 실패", "웹페이지에 연결할 수 없습니다.\n" + str(e))
 
     def submit_image(self):
-        # Function to handle the submission of the image
-        meal_time = self.meal_time_combo.currentText()  # Get selected meal time
-        current_date = datetime.now().strftime("%Y-%m-%d")  # Get current date
+        meal_time = self.meal_time_combo.currentText()  # 선택된 식사 시간
+        current_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜
+        info_added = False  # 추가된 정보가 있는지 추적
 
         try:
-            # Attempt to retrieve the food name from the server
-            food_name = self.get_food_name_from_server()
-        except requests.exceptions.ConnectionError:
-            # If connection fails, open manual nutrition input dialog
-            self.open_manual_nutrition_input_dialog()
-            return
+            food_names = self.get_food_name_from_server()  # 서버에서 음식 이름 가져오기
 
-        parser = Parser()
-        nutritional_info = parser.get_info_openapi(food_name)  # Get nutritional info
-        if nutritional_info["error"]:
-            # If error in getting info, open manual input dialog
-            self.open_manual_nutrition_input_dialog(food_name)
-            return
+            if not food_names or all(not name.strip() for name in food_names):
+                QMessageBox.warning(self, "오류", "음식이 인식되지 않았습니다.")
+                return
 
-        # Update user's diet information with the new food item
-        user_diet = self.user_credentials[self.user_id].setdefault("diet", {})
-        daily_diet = user_diet.setdefault(current_date, {"아침": [], "점심": [], "저녁": []})
-        food_info = {
-            "name": food_name,
-            "nutrition": nutritional_info["nutritional_info"],
-        }
-        daily_diet[meal_time].append(food_info)
+            for food_name in food_names:
+                if not food_name.strip():
+                    continue  # 빈 이름 건너뛰기
 
-        # Show a message box informing the user of the addition
-        QMessageBox.information(
-            self, "음식 정보 추가", f'{meal_time} 식단에 "{food_name}"이(가) 추가되었습니다.'
-        )
-        self.accept()  # Close the dialog
+                nutritional_info = self.query_nutritional_info(food_name)  # 영양 정보 조회
 
+                if nutritional_info.get("error"):
+                    if self.open_manual_nutrition_input_dialog(food_name):
+                        info_added = True  # 수동 입력 성공 시
+                    else:
+                        continue  # 수동 입력 취소 시 다음 음식으로 넘어감
+                else:
+                    self.save_nutrition_info(food_name, nutritional_info["nutritional_info"])  # 영양 정보 저장
+                    info_added = True
+
+            if info_added:
+                QMessageBox.information(self, "음식 정보 추가", f"{meal_time} 식단에 입력된 음식들이 추가되었습니다.")
+                self.accept()  # 대화 상자 닫기
+
+        except requests.exceptions.RequestException as e:
+            QMessageBox.critical(self, "연결 실패", "웹 서버에 연결할 수 없습니다.\n" + str(e))
+            if self.open_manual_nutrition_input_dialog():
+                QMessageBox.information(self, "음식 정보 추가", f"{meal_time} 식단에 입력된 음식들이 추가되었습니다.")
+                self.accept()  # 대화 상자 닫기
+
+    
     def get_food_name_from_server(self):
-        # Function to get the food name from the server
-        session = requests.Session()
-        response = session.get("http://110.34.114.31:5000/check")
-        if response.ok:
-            return response.text.split(" ")
-        else:
-            return ["Unknown"]
-
-    def submit_image(self):
-        # Handle the submission of the image
-        meal_time = self.meal_time_combo.currentText()  # Get the selected meal time
-        current_date = datetime.now().strftime(
-            "%Y-%m-%d"
-        )  # Get the current date in YYYY-MM-DD format
-        food_names = (
-            self.get_food_name_from_server()
-        )  # Retrieve food names from the server
-
-        # Check if any food names were recognized
-        if not food_names or all(not name.strip() for name in food_names):
-            QMessageBox.warning(
-                self, "오류", "음식이 인식되지 않았습니다."
-            )  # Show warning if no food was recognized
-            return
-
-        for food_name in food_names:
-            # Skip empty or whitespace-only names
-            if not food_name.strip():
-                continue
-            nutritional_info = self.query_nutritional_info(
-                food_name
-            )  # Query nutritional information for the food
-            # Handle case where nutritional info is not found or there's an error
-            if nutritional_info.get("error"):
-                if not self.open_manual_nutrition_input_dialog(food_name):
-                    continue
-            else:
-                # Save the nutritional information if no error
-                self.save_nutrition_info(
-                    food_name, nutritional_info["nutritional_info"]
-                )
-        QMessageBox.information(self, "음식 정보 추가", f"{meal_time} 식단에 입력된 음식들이 추가되었습니다.")
-        self.accept()  # Close the dialog
+            try:
+                session = requests.Session()
+                response = session.get("http://110.34.114.31:5000/check", timeout=5)  # 5초 타임아웃 설정
+                if response.ok:
+                    return response.text.split(" ")
+                else:
+                    return ["Unknown"]
+            except requests.exceptions.Timeout:
+                # 타임아웃 발생 시
+                QMessageBox.critical(self, "연결 실패", "서버로부터 응답이 없습니다. 네트워크 연결을 확인해주세요.")
+                return ["Unknown"]
+            except requests.exceptions.RequestException as e:
+                # 기타 요청 예외 발생 시
+                QMessageBox.critical(self, "연결 실패", "웹 서버에 연결할 수 없습니다.\n" + str(e))
+                return ["Unknown"]
 
     def open_manual_nutrition_input_dialog(self, pre_filled_food_name=None):
         # Open a dialog for manual input of nutrition information
