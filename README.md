@@ -8,7 +8,7 @@ Before you can start using NutriScan, you'll need to install its dependencies. H
 
 1. Open your terminal.
 2. Navigate to the NutriScan directory with `cd`.
-3. Run the following command:
+3. Run the following command(with python 3.8 or newer):
 
    ```
    pip install -r requirements.txt
