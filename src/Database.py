@@ -65,6 +65,22 @@ class Database:
         result = self.cursor.fetchone()
         return result
 
+    def add_new_user(self, user_id, password):
+        # Define the SQL query to insert a new user into the 'users' table.
+        query = "INSERT INTO users (user_id, password) VALUES (%s, %s)"
+        try:
+            # Execute the SQL query with the provided user_id and password.
+            self.cursor.execute(query, (user_id, password))
+            # Commit the transaction to the database.
+            self.connection.commit()
+            return True  # Return True to indicate success.
+        except pymysql.MySQLError as e:
+            # Print the error if the SQL operation fails.
+            print(f"An error occurred: {e}")
+            # Rollback the transaction in case of error.
+            self.connection.rollback()
+            return False  # Return False to indicate failure.
+
     def fetch_user_data(self, user_id):
         # Fetches specific data for a user based on the user ID.
         user_info_query = "SELECT * FROM users WHERE user_id = %s"
