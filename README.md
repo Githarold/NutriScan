@@ -4,7 +4,7 @@ Welcome to **NutriScan**! This AI-powered application identifies the food in you
 
 ## 📦 Installation
 
-Before you can start using NutriScan, you'll need to install its dependencies. Here's how:
+you'll need to install its dependencies. Here's how:
 
 1. Open your terminal.
 2. Navigate to the NutriScan directory with `cd`.
@@ -16,10 +16,12 @@ Before you can start using NutriScan, you'll need to install its dependencies. H
 
    This will install all the necessary Python packages listed in the `requirements.txt` file.
 
+## 📚 Before Start
+
+Before running the 'Nutriscan' program, you need a .env file containing the API TOKEN. For security reasons, we have not uploaded this file to git. If you send an email to harold3312@naver.com, we will send you the file. Once you have received the file, place it in the Nutriscan folder.
+
 ## 🚀 Getting Started
-```
-To obtain the necessary token for the program, please request a token by emailing harold3312@naver.com.
-```
+
 Ready to run NutriScan? Follow these steps:
 
 1. **Open your terminal or command prompt**:
